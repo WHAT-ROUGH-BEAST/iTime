@@ -21,13 +21,4 @@ public class Record {
     public int getImgId(){
         return imgId;
     }
-
-    public void changeText(String titile, String tip){
-        this.title = titile;
-        this.tip = tip;
-    }
-
-    public void changeImg(int resourceId){
-        imgId = resourceId;
-    }
 }

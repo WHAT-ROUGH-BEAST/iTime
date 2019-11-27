@@ -1,6 +1,11 @@
 package com.example.mytime;
 
+import android.content.Intent;
 import android.os.Bundle;
+
+import com.example.mytime.data.MainItemAdapter;
+import com.example.mytime.data.model.MainItem;
+import com.example.mytime.ui.create.CreateActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import android.view.View;
@@ -14,10 +19,16 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
+    protected Intent intentFab;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,13 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
         //右下方的按钮
         FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        fab.setOnClickListener(new FabListener());
 
         //侧滑选单
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -50,9 +55,6 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
-
-        //添加右下按钮点击事件
-        fab.setOnClickListener(new FabListener());
     }
 
     @Override
@@ -65,7 +67,8 @@ public class MainActivity extends AppCompatActivity {
     class FabListener implements View.OnClickListener {
         @Override
         public void onClick(View view) {
-
+            intentFab = new Intent(MainActivity.this, CreateActivity.class);
+            
         }
     }
 }

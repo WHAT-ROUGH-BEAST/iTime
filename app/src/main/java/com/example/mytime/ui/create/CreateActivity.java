@@ -16,7 +16,7 @@ import com.example.mytime.data.model.Record;
 
 import java.util.ArrayList;
 
-public class CreateActitvity extends AppCompatActivity {
+public class CreateActivity extends AppCompatActivity {
 
     private Button btnRet, btnYes;
     private EditText title, tip;
@@ -31,7 +31,7 @@ public class CreateActitvity extends AppCompatActivity {
 
         initRecord();
         RecordAdapter recordAdapter =
-                new RecordAdapter(CreateActitvity.this, R.layout.listview_component, records);
+                new RecordAdapter(CreateActivity.this, R.layout.listview_component, records);
         recordList = (ListView)findViewById(R.id.list_record);
         recordList.setAdapter(recordAdapter);
     }

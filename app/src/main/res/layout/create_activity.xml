@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:orientation="horizontal">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/activity_vertical_margin"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="135dp"
+            android:backgroundTint="@color/pale"
+            app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/activity_vertical_margin"
+            android:layout_marginLeft="135dp"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:backgroundTint="@color/pale"
+            app:srcCompat="@android:drawable/ic_media_play" />
+    </LinearLayout>
+
+    <LinearLayout android:layout_height="fill_parent"
+        android:layout_width="fill_parent"
+        android:background="@color/colorPrimary"
+        android:layout_weight="2"
+        android:orientation="vertical">
+
+        <TextView
+            android:text="@string/create_title"
+            android:textColor="@color/white"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+            android:layout_weight="1"/>
+        <EditText
+            android:textColorHint="@color/white"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:hint="@string/create_default"
+            android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:text="@string/create_tip"
+            android:textColor="@color/white"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+            android:layout_weight="1"/>
+        <EditText
+            android:textColorHint="@color/white"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:hint="@string/create_default"
+            android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+
+    <LinearLayout android:layout_height="fill_parent"
+        android:layout_width="fill_parent"
+        android:layout_weight="1">
+
+        <ListView
+            android:id = "@+id/list_record"
+            android:layout_height="fill_parent"
+            android:layout_width="fill_parent" />
+
+    </LinearLayout>
+
+</LinearLayout>

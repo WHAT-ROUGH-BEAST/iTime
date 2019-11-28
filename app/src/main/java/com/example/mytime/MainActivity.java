@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
             intentFab = new Intent(MainActivity.this, CreateActivity.class);
-            
+            startActivity(intentFab);
         }
     }
 }

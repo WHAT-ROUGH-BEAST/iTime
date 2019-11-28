@@ -11,60 +11,75 @@
         android:background="@color/colorPrimary"
         android:orientation="horizontal">
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
+        <ImageButton
+            android:id="@+id/create_no"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginVertical="@dimen/activity_vertical_margin"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:layout_marginRight="135dp"
-            android:backgroundTint="@color/pale"
-            app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
+            android:layout_marginRight="120dp"
+            android:backgroundTint="@color/colorPrimary"
+            android:src="@drawable/back"
+            tools:ignore="ButtonStyle" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
+        <ImageButton
+            android:id="@+id/create_yes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginVertical="@dimen/activity_vertical_margin"
-            android:layout_marginLeft="135dp"
+            android:layout_marginLeft="120dp"
             android:layout_marginRight="@dimen/activity_horizontal_margin"
-            android:backgroundTint="@color/pale"
-            app:srcCompat="@android:drawable/ic_media_play" />
+            android:backgroundTint="@color/colorPrimary"
+            android:src="@drawable/add"
+            tools:ignore="ButtonStyle" />
+
     </LinearLayout>
 
     <LinearLayout android:layout_height="fill_parent"
         android:layout_width="fill_parent"
         android:background="@color/colorPrimary"
-        android:layout_weight="2"
+        android:layout_weight="1.5"
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/create_title"
             android:text="@string/create_title"
             android:textColor="@color/white"
             android:layout_height="wrap_content"
             android:layout_width="fill_parent"
             android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            tools:targetApi="o"
+            tools:ignore="NestedWeights" />
         <EditText
+            android:id="@+id/create_title_edit"
             android:textColorHint="@color/white"
             android:layout_height="wrap_content"
             android:layout_width="fill_parent"
             android:hint="@string/create_default"
             android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            tools:targetApi="o" />
 
         <TextView
+            android:id="@+id/create_tip"
             android:text="@string/create_tip"
             android:textColor="@color/white"
             android:layout_height="wrap_content"
             android:layout_width="fill_parent"
             android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            tools:targetApi="o" />
         <EditText
+            android:id="@+id/create_tip_edit"
             android:textColorHint="@color/white"
             android:layout_height="wrap_content"
             android:layout_width="fill_parent"
             android:hint="@string/create_default"
             android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
-            android:layout_weight="1"/>
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_weight="1"
+            tools:targetApi="o" />
 
     </LinearLayout>
 

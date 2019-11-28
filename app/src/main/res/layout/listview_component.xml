@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
-    android:layout_height="100dp">
+    android:layout_height="90dp">
 
     <ImageView
         android:id="@+id/record_img"
@@ -20,6 +20,7 @@
         <TextView
             android:id="@+id/record_title"
             android:text="here"
+            android:textSize="@dimen/font_mid"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="1"
@@ -28,6 +29,8 @@
         <TextView
             android:id="@+id/record_tip"
             android:text="here"
+            android:textSize="@dimen/font_mid"
+            android:textColor="@color/pale"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="1"

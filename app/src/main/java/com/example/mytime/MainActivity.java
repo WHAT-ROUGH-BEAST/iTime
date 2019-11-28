@@ -8,7 +8,11 @@ import com.example.mytime.data.model.MainItem;
 import com.example.mytime.ui.create.CreateActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+
+import android.util.Log;
 import android.view.View;
+
+import androidx.annotation.Nullable;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -22,10 +26,13 @@ import android.view.Menu;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final int CREAT_RET = 190;
+    private static final int CREAT_GET_RET = 190;
     private AppBarConfiguration mAppBarConfiguration;
     protected Intent intentFab;
 
@@ -64,11 +71,39 @@ public class MainActivity extends AppCompatActivity {
                 || super.onSupportNavigateUp();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode){
+            case CREAT_RET:
+            {
+                if (CREAT_GET_RET == resultCode){
+                    try{
+                        assert data != null;
+                        int resId = data.getIntExtra("resId", 0);
+                        String title = data.getStringExtra("title");
+                        String tip = data.getStringExtra("tip");
+                        String date = data.getStringExtra("date");
+                    }catch (Exception e){
+                        Log.d("creat_ret", "create_ret data == null");
+                        break;
+                    }
+
+                    //update navigation--home
+                    //update
+                }
+                break;
+            }
+            default:
+                break;
+        }
+    }
+
     class FabListener implements View.OnClickListener {
         @Override
         public void onClick(View view) {
             intentFab = new Intent(MainActivity.this, CreateActivity.class);
-            startActivity(intentFab);
+            startActivityForResult(intentFab, CREAT_RET);
         }
     }
 }

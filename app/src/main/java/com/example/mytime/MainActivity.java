@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private NavigationView navigationView;
     protected Intent intentFab;
     private ArrayList<MainItem> mainItems;
+    private NavController navController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,13 +75,13 @@ public class MainActivity extends AppCompatActivity {
                 R.id.nav_home, R.id.nav_tools, R.id.nav_share, R.id.nav_send)
                 .setDrawerLayout(drawer)
                 .build();
-        //Controller好像可以实现添加等//TODO
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+        update();
 
         //测选单的不同选项Listener
-        navigationView.setNavigationItemSelectedListener(new NavSelectedListener());
+//        navigationView.setNavigationItemSelectedListener(new NavSelectedListener());
 
         //为mainitem添加序列化//TODO
     }
@@ -113,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
                                 data.getStringExtra("tip"),
                                 data.getStringExtra("date")));
 
+                        Log.d("data.get", data.getStringExtra("title"));
                         Log.d("creat_ret", "create_ret data != null " + mainItems.size());
                     }catch (Exception e){
                         Log.d("creat_ret", "create_ret data == null");
@@ -126,12 +128,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //更新数据
-        HomeFragment homeFragment = new HomeFragment();
-        Bundle bundle = new Bundle();
-        ItemPack itemPack = new ItemPack();
-        itemPack.setMainItems(mainItems);
-        bundle.putSerializable("items", itemPack);
-        homeFragment.setArguments(bundle);
+        update();
+
     }
 
     class FabListener implements View.OnClickListener {
@@ -142,29 +140,29 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //侧边栏监听事件
-    class NavSelectedListener implements NavigationView.OnNavigationItemSelectedListener{
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.nav_home:
-                    Toast.makeText(MainActivity.this, "Home is clicked!", Toast.LENGTH_SHORT).show();
+//    //侧边栏监听事件
+//    class NavSelectedListener implements NavigationView.OnNavigationItemSelectedListener{
+//        @Override
+//        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+//            switch (item.getItemId()) {
+//                case R.id.nav_home:
+//                    Toast.makeText(MainActivity.this, "Home is clicked!", Toast.LENGTH_SHORT).show();
+//                    break;
+//                default:
+//                    //后期实现label中的传值//TODO
+//                    break;
+//            }
+//            drawer.closeDrawer(navigationView);
+//            return false;
+//        }
+//    }
 
-                    //每次打开都根据mainactivity中维护的ArrayList<MainItem>检查并更新数据
-                    HomeFragment homeFragment = new HomeFragment();
-                    Bundle bundle = new Bundle();
-                    ItemPack itemPack = new ItemPack();
-                    itemPack.setMainItems(mainItems);
-                    bundle.putSerializable("items", itemPack);
-                    homeFragment.setArguments(bundle);
-
-                    break;
-                default:
-                    //后期实现label中的传值//TODO
-                    break;
-            }
-            drawer.closeDrawer(navigationView);
-            return false;
-        }
+    private void update(){
+        Bundle bundle = new Bundle();
+        ItemPack itemPack = new ItemPack();
+        itemPack.setMainItems(mainItems);
+        bundle.putSerializable("items", itemPack);
+//        nav_home
+        navController.navigate(R.id.nav_home, bundle);
     }
 }

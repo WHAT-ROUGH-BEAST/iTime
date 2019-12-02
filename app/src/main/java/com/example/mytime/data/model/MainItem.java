@@ -1,10 +1,12 @@
 package com.example.mytime.data.model;
 
-public class MainItem {
+import java.io.Serializable;
+
+public class MainItem implements Serializable {
     private String title, date, tip, textOnImg;
     private int imgId;
 
-    public MainItem(int imgId, String title, String date, String tip){
+    public MainItem(int imgId, String title, String tip, String date){
         this.imgId = imgId;
         this.title = title;
         this.tip = tip;

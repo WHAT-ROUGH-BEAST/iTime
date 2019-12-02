@@ -17,8 +17,7 @@ public class HomeViewModel extends ViewModel {
     public HomeViewModel() {
         resourceId = new MutableLiveData<>();
         mainItems = new MutableLiveData<>();
-        if (null == resourceId || null == mainItems)
-            defaultData();
+//        defaultData();
     }
 
     public LiveData<Integer> getResource() {
@@ -34,11 +33,13 @@ public class HomeViewModel extends ViewModel {
         mainItems.setValue(m);
     }
 
-    private void defaultData(){
-        resourceId.setValue(R.drawable.default_img);
-
-        mainItems.getValue().add(new MainItem(R.drawable.default_img,
-                "title", "date", "tip"));
-        mainItems.setValue(mainItems.getValue());
-    }
+//    private void defaultData(){
+//        resourceId.setValue(R.drawable.default_img);
+//
+//        ArrayList<MainItem> m = mainItems.getValue();
+//        assert m != null;
+//        m.add(new MainItem(R.drawable.default_img,
+//                "title", "date", "tip"));
+//        mainItems.setValue(mainItems.getValue());
+//    }
 }

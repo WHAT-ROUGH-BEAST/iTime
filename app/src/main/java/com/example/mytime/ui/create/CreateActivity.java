@@ -20,8 +20,7 @@ import java.util.ArrayList;
 
 public class CreateActivity extends AppCompatActivity {
 
-    private static final int CREAT_RET = 190;
-    private static final int CREAT_GET_RET = 190;
+    private static final int CREAT_GET_RET = 1;
     private ImageButton btnNo, btnYes;
     private EditText title, tip;
     private ListView recordList;
@@ -39,7 +38,7 @@ public class CreateActivity extends AppCompatActivity {
         tip = (EditText)findViewById(R.id.create_tip_edit);
 
         //ListView init
-        //后期移植到xml中？？？？
+        //后期移植到xml中//TODO
         initRecord();
         RecordAdapter recordAdapter =
                 new RecordAdapter(CreateActivity.this, R.layout.listview_component, records);
@@ -57,7 +56,9 @@ public class CreateActivity extends AppCompatActivity {
         btnYes.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                creatRet();
+                Intent intent = new Intent();
+                setResult(CREAT_GET_RET, intent);
+                finish();
             }
         });
     }
@@ -67,15 +68,5 @@ public class CreateActivity extends AppCompatActivity {
         records.add(new Record(R.drawable.repeat, "重复设置", "无"));
         records.add(new Record(R.drawable.pic, "图片", ""));
         records.add(new Record(R.drawable.tag, "添加标签", ""));
-    }
-
-    private void creatRet(){
-        Intent intent = new Intent();
-        intent.putExtra("resId", 0);
-        intent.putExtra("title", title.getText());
-        intent.putExtra("tip", tip.getText());
-        intent.putExtra("date", "");
-        setResult(CREAT_RET, intent);
-        finish();
     }
 }

@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
         //维护一个ArrayList<MainItem>
         mainItems = new ArrayList<>();
-        mainItems.add(new MainItem(R.drawable.default_img, "title", "date", "tip"));//default
+        mainItems.add(new MainItem(R.drawable.default_img, "title", "tip", "date"));//default
 
         //最上方的部分
         toolbar = findViewById(R.id.toolbar);
@@ -108,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
                         // （意味着main要维护一份ListMainItem）
                         //考虑到有删除功能，如果一个标签下删除 意味着要通知其他的标签页也删除
                         //因此选择每次点击进入fragment都刷新一次
+                        //public MainItem(int imgId, String title, String tip, String date)
                         mainItems.add(new MainItem(
                                 data.getIntExtra("resId", R.drawable.default_img),
                                 data.getStringExtra("title"),

@@ -57,12 +57,8 @@ public class HomeFragment extends Fragment {
         imageView = view.findViewById(R.id.img_home);
         imageView.setImageResource(homeViewModel.getResource());
 
-        //list
+        //list // TODO-->solved 在create界面返回之后更新fragment
         ItemList = (ListView) view.findViewById(R.id.list_home);
-            //当主页面当前的fragment是本fragment时 没有点击侧边栏 却依然需要传数据
-            //此时就需要默认初始化
-            //这个逻辑不对 因为默认初始化也应该与刚修改的内容一致 在create完之后也应该传一次数据
-            // TODO-->solved 在create界面返回之后更新fragment
         MainItemAdapter mainItemAdapter = new MainItemAdapter(getContext(), R.layout.item_main,
                 homeViewModel.getMainItems());
         ItemList.setAdapter(mainItemAdapter); //adapter == null

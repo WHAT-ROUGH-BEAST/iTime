@@ -11,7 +11,7 @@
         android:textSize="@dimen/font_small"/>
 
     <LinearLayout android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:orientation="horizontal">
         <TextView
             android:text="@string/dialog_edit_year"
@@ -22,7 +22,8 @@
             android:id="@+id/edit_year"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:inputType="number" />
+            android:inputType="number"
+            android:text="@string/create_default"/>
 
         <TextView
             android:text="@string/dialog_edit_month"
@@ -33,7 +34,8 @@
             android:id="@+id/edit_month"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:inputType="number"/>
+            android:inputType="number"
+            android:text="@string/create_default"/>
 
         <TextView
             android:text="@string/dialog_edit_day"
@@ -44,7 +46,8 @@
             android:id="@+id/edit_day"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:inputType="number"/>
+            android:inputType="number"
+            android:text="@string/create_default"/>
 
     </LinearLayout>
 

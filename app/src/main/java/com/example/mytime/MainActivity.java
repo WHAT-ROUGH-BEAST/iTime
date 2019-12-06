@@ -12,6 +12,7 @@ import com.example.mytime.ui.home.HomeViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -56,7 +57,10 @@ public class MainActivity extends AppCompatActivity {
 
         //维护一个ArrayList<MainItem>
         mainItems = new ArrayList<>();
-        mainItems.add(new MainItem(R.drawable.default_img, "title", "tip", "date"));//default
+        ArrayList<String> defaultlabel = new ArrayList<String>();
+        defaultlabel.add("1");
+        mainItems.add(new MainItem(R.drawable.default_img, "title", "tip", "date",
+                defaultlabel, "no"));//default
 
         //最上方的部分
         toolbar = findViewById(R.id.toolbar);
@@ -104,19 +108,16 @@ public class MainActivity extends AppCompatActivity {
                 if (CREAT_GET_RET == resultCode){
                     try{
                         assert data != null;
-                        //因为每次进入fragment必定会初始化一次 要么进行数据持久化 要么每次进入都刷新一次
-                        // （意味着main要维护一份ListMainItem）
-                        //考虑到有删除功能，如果一个标签下删除 意味着要通知其他的标签页也删除
-                        //因此选择每次点击进入fragment都刷新一次
-                        //public MainItem(int imgId, String title, String tip, String date)
                         mainItems.add(new MainItem(
                                 data.getIntExtra("resId", R.drawable.default_img),
                                 data.getStringExtra("title"),
                                 data.getStringExtra("tip"),
-                                data.getStringExtra("date")));
+                                data.getStringExtra("date"),
+                                data.getStringArrayListExtra("label"),
+                                data.getStringExtra("repeat")));
+                        //label, repeat只对main有意义：判断标签以及倒计时间；
 
-                        Log.d("data.get", data.getStringExtra("title"));
-                        Log.d("creat_ret", "create_ret data != null " + mainItems.size());
+                        Log.d("creat_ret", "create_ret data != null " + mainItems.get(1).getLabel());//tags--String
                     }catch (Exception e){
                         Log.d("creat_ret", "create_ret data == null");
                         break;
@@ -127,10 +128,13 @@ public class MainActivity extends AppCompatActivity {
             default:
                 break;
         }
-
+        //因为每次进入fragment必定会初始化一次 要么进行数据持久化 要么每次进入都刷新一次
+        // （意味着main要维护一份ListMainItem）
+        //考虑到有删除功能，如果一个标签下删除 意味着要通知其他的标签页也删除
+        //因此选择每次点击进入fragment都刷新一次
+        //public MainItem(int imgId, String title, String tip, String date)
         //更新数据
         update();
-
     }
 
     class FabListener implements View.OnClickListener {

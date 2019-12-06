@@ -26,6 +26,7 @@
         app:layout_constraintTop_toTopOf="@+id/img_home">
 
         <TextView
+            android:id="@+id/title_home"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/font_mid"
@@ -34,6 +35,7 @@
             android:textColor="@color/white" />
 
         <TextView
+            android:id="@+id/date_home"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/font_mid"
@@ -42,6 +44,7 @@
             android:textColor="@color/white" />
 
         <TextView
+            android:id="@+id/downcount_home"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/font_big"

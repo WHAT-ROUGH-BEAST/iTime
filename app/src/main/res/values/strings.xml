@@ -18,4 +18,9 @@
     <string name="dialog_edit_year">年</string>
     <string name="dialog_edit_month">月</string>
     <string name="dialog_edit_day">日</string>
+
+    <string name="dialog_text_label">请选择标签</string>
+    <string name="dialog_button1">学习</string>
+    <string name="dialog_button2">生活</string>
+
 </resources>

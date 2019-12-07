@@ -22,6 +22,7 @@ import com.example.mytime.data.model.MainItem;
 
 import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class HomeFragment extends Fragment {
 
@@ -52,7 +53,8 @@ public class HomeFragment extends Fragment {
                 mainItems = itemPack.getMainItems();
                 Log.d("itemPack", "get fine Serializable " + mainItems.size());
             } catch (Exception e){
-                defaultItem();
+                //default
+                mainItems = new ArrayList<>();
                 Log.d("getArguments", e.getMessage());
                 Log.d("itemPack", e.getMessage());
             }
@@ -70,44 +72,42 @@ public class HomeFragment extends Fragment {
 
         title_home.setText(mainItems.get(mainItems.size()-1).getTitle());
         date_home.setText(mainItems.get(mainItems.size()-1).getDate());
-        //得到现在时间
-        String[] ddltime_str = mainItems.get(mainItems.size()-1).getDate().split("\\.");
-        leftTime = 0;
-        try{
-            for (String str : ddltime_str){
-                leftTime += Integer.parseInt(str);
-            }
-        }catch (Exception e){
-            leftTime = 100;
-        }
-
+            //得到现在时间
+        setLeftTime();
         update_thread = new RunUpdate();
         handlerStop = new HandlerStop();
         update_thread.run();
 
-        //list // TODO-->solved 在create界面返回之后更新fragment
+        //list
         ItemList = (ListView) view.findViewById(R.id.list_home);
         MainItemAdapter mainItemAdapter = new MainItemAdapter(getContext(), R.layout.item_main,
                 homeViewModel.getMainItems());
-        ItemList.setAdapter(mainItemAdapter); //adapter == null
+        ItemList.setAdapter(mainItemAdapter);
         ItemList.setOnItemClickListener(new MainItemListener());
 
         //return
         return view;
-    }
-
+    }//: end of onCreatView
 
     private void initModel(int id, ArrayList<MainItem> m){
         homeViewModel.setMainItems(m);
         homeViewModel.setResourceId(id);
     }
 
-    private void defaultItem(){
-        mainItems = new ArrayList<>();
-        ArrayList<String> defaultlabel = new ArrayList<String>();
-        defaultlabel.add("1");
-        mainItems.add(new MainItem(R.drawable.default_img, "title", "date", "tip", defaultlabel, "no"));
-        mainItems.add(new MainItem(R.drawable.default_img, "title1", "date1", "tip1", defaultlabel, "no"));
+    private void setLeftTime(){
+        String[] ddltime_str = mainItems.get(mainItems.size()-1).getDate().split("\\.");
+        Calendar calendar_now = Calendar.getInstance();
+        Calendar calendar_ddl = Calendar.getInstance();
+        try{
+            calendar_ddl.set(Integer.parseInt(ddltime_str[0]),
+                    Integer.parseInt(ddltime_str[1]) - 1,
+                    Integer.parseInt(ddltime_str[2]));
+            calendar_ddl.getTimeInMillis();
+            leftTime = (calendar_ddl.getTimeInMillis() - calendar_now.getTimeInMillis())/1000;
+            Log.d("getLeftTime", leftTime+"");
+        }catch (Exception e){
+            leftTime = 0;
+        }
     }
 
     class MainItemListener implements AdapterView.OnItemClickListener{
@@ -146,7 +146,7 @@ public class HomeFragment extends Fragment {
             long hour = (date / (60 * 60) - day * 24);
             long min = ((date / 60) - day * 24 * 60 - hour * 60);
             long s = (date - day*24*60*60 - hour*60*60 - min*60);
-            String strtime = "剩余："+day+"天"+hour+"小时"+min+"分"+s+"秒";
+            String strtime = day+"天"+hour+"小时"+min+"分"+s+"秒";
             return strtime;
         }
     }

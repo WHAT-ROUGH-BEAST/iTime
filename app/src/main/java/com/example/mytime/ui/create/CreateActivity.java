@@ -189,7 +189,7 @@ public class CreateActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 for(int i=0; i<2; i++){
                     if(true == checkedItems[i]){
-                        tags += items[i];
+                        tags += " "+items[i];
                     }
                 }
                 //show

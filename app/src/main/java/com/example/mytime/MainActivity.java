@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         mainItems = new ArrayList<>();
         ArrayList<String> defaultlabel = new ArrayList<String>();
         defaultlabel.add("1");
-        mainItems.add(new MainItem(R.drawable.default_img, "title", "tip", "date",
+        mainItems.add(new MainItem(R.drawable.default_img, "title", "tip", "2020.12.7",
                 defaultlabel, "no"));//default
 
         //最上方的部分

@@ -1,7 +1,10 @@
 package com.example.mytime.data.model;
 
+import android.util.Log;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class MainItem implements Serializable {
     private String title, date, tip, textOnImg;
@@ -15,7 +18,7 @@ public class MainItem implements Serializable {
         this.tip = tip;
         this.date = date;
         textOnImg = date;//后期修改为剩余时间
-
+//        this.textOnImg = textOnImg;
         this.label = label;
         this.repeat = repeat;
     }

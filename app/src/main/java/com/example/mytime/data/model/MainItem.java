@@ -12,13 +12,13 @@ public class MainItem implements Serializable {
     private ArrayList<String> label;
     private String repeat;
 
-    public MainItem(int imgId, String title, String tip, String date, ArrayList<String> label, String repeat){
+    public MainItem(int imgId, String title, String tip, String date, ArrayList<String> label, String repeat, String textOnImg){
         this.imgId = imgId;
         this.title = title;
         this.tip = tip;
         this.date = date;
-        textOnImg = date;//后期修改为剩余时间
-//        this.textOnImg = textOnImg;
+//        textOnImg = date;//后期修改为剩余时间
+        this.textOnImg = textOnImg;
         this.label = label;
         this.repeat = repeat;
     }
@@ -41,7 +41,7 @@ public class MainItem implements Serializable {
 
     public String getTextOnImg() { return textOnImg; }
 
-    public ArrayList<String> getLabel(){return label;};
+    public ArrayList<String> getLabel(){ return label; };
 
-    public String getRepeat(){return repeat;}
+    public String getRepeat(){ return repeat; }
 }

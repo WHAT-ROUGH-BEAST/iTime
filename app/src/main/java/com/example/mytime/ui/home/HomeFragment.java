@@ -1,6 +1,7 @@
 package com.example.mytime.ui.home;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -13,18 +14,23 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.mytime.R;
 import com.example.mytime.data.ItemPack;
 import com.example.mytime.data.MainItemAdapter;
 import com.example.mytime.data.model.MainItem;
+import com.example.mytime.ui.ItemDetailActivity;
 
+import java.io.Serializable;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Calendar;
 
 public class HomeFragment extends Fragment {
+
+    private static final int ITEM_DETAIL = 100;
 
     private HomeViewModel homeViewModel;
     private ListView ItemList;
@@ -118,6 +124,12 @@ public class HomeFragment extends Fragment {
             //传相应的数据
             //收回数据以便更改本mainItems
             //通知mainactivity改动mainItems
+
+            //传信息传到mainactivity
+            Intent intent = new Intent(getContext(), ItemDetailActivity.class);
+            intent.putExtra("mainItem", (Serializable) mainItems.get(i));
+            intent.putExtra("leftTime", leftTime);
+            startActivityForResult(intent, ITEM_DETAIL);
         }
     }
 

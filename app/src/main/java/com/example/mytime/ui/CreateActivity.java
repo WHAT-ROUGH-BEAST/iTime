@@ -1,36 +1,30 @@
-package com.example.mytime.ui.create;
+package com.example.mytime.ui;
 
 import android.annotation.SuppressLint;
-import android.app.TimePickerDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 
 import com.example.mytime.R;
 import com.example.mytime.data.RecordAdapter;
 import com.example.mytime.data.model.Record;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class CreateActivity extends AppCompatActivity {
 
     private static final int CREAT_GET_RET = 1;
+
     private ImageButton btnNo, btnYes;
     private EditText title, tip;
     private ListView recordList;

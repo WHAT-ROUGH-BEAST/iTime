@@ -4,22 +4,14 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.mytime.data.ItemPack;
-import com.example.mytime.data.MainItemAdapter;
 import com.example.mytime.data.model.MainItem;
-import com.example.mytime.ui.create.CreateActivity;
-import com.example.mytime.ui.home.HomeFragment;
-import com.example.mytime.ui.home.HomeViewModel;
+import com.example.mytime.ui.CreateActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
-import android.os.Handler;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -29,18 +21,17 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import android.view.Menu;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.Toast;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int CREAT_RET = 1;
     private static final int CREAT_GET_RET = 1;
+    private static final int ITEM_DETAIL = 100;
+    private static final int ITEM_DETAIL_DEL = 101;
+    private static final int ITEM_DETAIL_CHANGE = 102;
+
     private AppBarConfiguration mAppBarConfiguration;
     private Toolbar toolbar;
     private FloatingActionButton fab;
@@ -60,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<String> defaultlabel = new ArrayList<String>();
         defaultlabel.add("1");
         mainItems.add(new MainItem(R.drawable.default_img, "title", "tip", "2020.12.7",
-                defaultlabel, "no"));//default
+                defaultlabel, "每天", "0"));//default
 
         //最上方的部分
         toolbar = findViewById(R.id.toolbar);
@@ -114,7 +105,8 @@ public class MainActivity extends AppCompatActivity {
                                 data.getStringExtra("tip"),
                                 data.getStringExtra("date"),
                                 data.getStringArrayListExtra("label"),
-                                data.getStringExtra("repeat")));
+                                data.getStringExtra("repeat"),
+                                "0"));
                         //label, repeat只对main有意义：判断标签以及倒计时间；
 
                         Log.d("creat_ret", "create_ret data != null " + mainItems.get(1).getLabel());//tags--String
@@ -124,6 +116,15 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
                 break;
+            }
+            case ITEM_DETAIL:
+            {
+                //返回的是一个mainitem
+                if (resultCode == ITEM_DETAIL_DEL){
+                    //删除
+                }else if (resultCode == ITEM_DETAIL_CHANGE){
+                    //更新
+                }
             }
             default:
                 break;

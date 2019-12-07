@@ -23,4 +23,8 @@
     <string name="dialog_button1">学习</string>
     <string name="dialog_button2">生活</string>
 
+    <string name="title_activity_item_detail">ItemDetailActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+
 </resources>

@@ -6,8 +6,11 @@ import android.os.Bundle;
 import com.example.mytime.data.ItemPack;
 import com.example.mytime.data.model.MainItem;
 import com.example.mytime.ui.CreateActivity;
+import com.example.mytime.ui.home.HomeFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 
@@ -23,6 +26,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -40,6 +44,10 @@ public class MainActivity extends AppCompatActivity {
     protected Intent intentFab;
     private ArrayList<MainItem> mainItems;
     private NavController navController;
+
+    private Handler handler = new Handler();
+    private Runnable update_thread;
+    private Handler handlerStop;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +82,14 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
         update();
+
+        //倒计时线程
+        for(MainItem item : mainItems){
+            setLeftTime(item);
+        }
+        update_thread = new RunUpdate();
+        handlerStop = new HandlerStop();
+        update_thread.run();
 
         //测选单的不同选项Listener
 //        navigationView.setNavigationItemSelectedListener(new NavSelectedListener());
@@ -116,16 +132,17 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
                 break;
-            }
+            }//END OF CASE
             case ITEM_DETAIL:
             {
+                //TODO
                 //返回的是一个mainitem
                 if (resultCode == ITEM_DETAIL_DEL){
                     //删除
                 }else if (resultCode == ITEM_DETAIL_CHANGE){
                     //更新
                 }
-            }
+            } //END OF CASE
             default:
                 break;
         }
@@ -146,7 +163,60 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-//    //侧边栏监听事件
+    private void update(){
+        Bundle bundle = new Bundle();
+        ItemPack itemPack = new ItemPack();
+        itemPack.setMainItems(mainItems);
+        bundle.putSerializable("items", itemPack);
+//        nav_home
+        navController.navigate(R.id.nav_home, bundle);
+    }
+
+    //初始化倒计时
+    private void setLeftTime(MainItem mainItem){
+        String[] ddltime_str = mainItems.get(mainItems.size()-1).getDate().split("\\.");
+        Calendar calendar_now = Calendar.getInstance();
+        Calendar calendar_ddl = Calendar.getInstance();
+        try{
+            calendar_ddl.set(Integer.parseInt(ddltime_str[0]),
+                    Integer.parseInt(ddltime_str[1]) - 1,
+                    Integer.parseInt(ddltime_str[2]));
+            calendar_ddl.getTimeInMillis();
+            mainItem.setLeftTime((calendar_ddl.getTimeInMillis() - calendar_now.getTimeInMillis())/1000);
+            Log.d("getLeftTime", mainItem.getLeftTime()+"");
+        }catch (Exception e){
+            mainItem.setLeftTime(0);
+        }
+    }
+    //倒计时线程
+    class RunUpdate implements Runnable {
+        @Override
+        public void run() {
+            try{
+                for(MainItem item : mainItems){
+                    item.setLeftTime(item.getLeftTime()-1);
+                }
+                update();
+                handler.postDelayed(this, 1000);
+            } catch (Exception e){
+                Message message = new Message();
+                message.what = 1;
+                handlerStop.sendMessage(message);
+            }
+        }
+    }
+    class HandlerStop extends Handler {
+        public void handleMessage(Message msg) {
+            if (msg.what == 1) {
+                handler.removeCallbacks(update_thread);
+            } else {
+                throw new IllegalStateException("Unexpected value: " + msg.what);
+            }
+            super.handleMessage(msg);
+        }
+    }
+
+    //    //侧边栏监听事件
 //    class NavSelectedListener implements NavigationView.OnNavigationItemSelectedListener{
 //        @Override
 //        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -163,12 +233,4 @@ public class MainActivity extends AppCompatActivity {
 //        }
 //    }
 
-    private void update(){
-        Bundle bundle = new Bundle();
-        ItemPack itemPack = new ItemPack();
-        itemPack.setMainItems(mainItems);
-        bundle.putSerializable("items", itemPack);
-//        nav_home
-        navController.navigate(R.id.nav_home, bundle);
-    }
 }

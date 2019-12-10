@@ -59,6 +59,7 @@
         android:id="@+id/fullscreen_content">
 
         <RelativeLayout
+            android:id="@+id/top_buttons"
             android:layout_height="wrap_content"
             android:layout_width="match_parent">
 

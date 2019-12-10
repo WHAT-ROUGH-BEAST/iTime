@@ -11,6 +11,7 @@ public class MainItem implements Serializable {
     private int imgId;
     private ArrayList<String> label;
     private String repeat;
+    private long leftTime;
 
     public MainItem(int imgId, String title, String tip, String date, ArrayList<String> label, String repeat, String textOnImg){
         this.imgId = imgId;
@@ -44,4 +45,12 @@ public class MainItem implements Serializable {
     public ArrayList<String> getLabel(){ return label; };
 
     public String getRepeat(){ return repeat; }
+
+    public long getLeftTime(){
+        return leftTime;
+    }
+
+    public void setLeftTime(long time){
+        leftTime = time;
+    }
 }

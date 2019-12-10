@@ -198,7 +198,6 @@ public class CreateActivity extends AppCompatActivity {
         dialog.show();
     }
 
-
     private void repeatDialog(){
         final String items[] = {"每天", "每周", "每月", "每年"};
         final int[] checkedItem = {1};

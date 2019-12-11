@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.mytime.MainActivity;
 import com.example.mytime.R;
 import com.example.mytime.data.ItemPack;
 import com.example.mytime.data.MainItemAdapter;
@@ -33,7 +34,6 @@ public class HomeFragment extends Fragment {
     private static final int ITEM_DETAIL = 100;
     private static final int ITEM_DETAIL_DEL = 101;
     private static final int ITEM_DETAIL_CHANGE = 102;
-    private static final int ITEM_DETAIL_BACK = 103;
 
     private HomeViewModel homeViewModel;
     private ListView ItemList;
@@ -46,13 +46,14 @@ public class HomeFragment extends Fragment {
     private Runnable update_thread;
     private Handler handlerStop;
     private Intent intentItemDetailAc;
+    private MainItemAdapter mainItemAdapter;
 
-    //ItemDetailAc的回调函数
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        //TODO
-    }
+//    //ItemDetailAc的回调函数
+//    @Override
+//    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        //TODO
+//    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -75,21 +76,27 @@ public class HomeFragment extends Fragment {
         date_home.setText(mainItems.get(mainItems.size()-1).getDate());
             //downcount_home更新线程
         update_thread = new RunUpdate();
-//        detail_thread = new
         handlerStop = new HandlerStop();
         update_thread.run();
 
         //list
         ItemList = (ListView) view.findViewById(R.id.list_home);
-        MainItemAdapter mainItemAdapter = new MainItemAdapter(getContext(), R.layout.item_main,
+        mainItemAdapter = new MainItemAdapter(getContext(), R.layout.item_main,
                 homeViewModel.getMainItems());
         ItemList.setAdapter(mainItemAdapter);
         ItemList.setOnItemClickListener(new MainItemListener());
+
         intentItemDetailAc = new Intent(getContext(), ItemDetailActivity.class);
 
         //return
         return view;
     }//: end of onCreatView
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        readFromMain();
+    }
 
     @Override
     public void onDestroy() {
@@ -113,7 +120,6 @@ public class HomeFragment extends Fragment {
                 ItemPack itemPack = (ItemPack) getArguments().getSerializable("items");
                 assert itemPack != null;
                 mainItems = itemPack.getMainItems();
-                Log.d("itemPack", "get fine Serializable " + mainItems.size());
             } catch (Exception e){
                 //default
                 mainItems = new ArrayList<>();
@@ -122,8 +128,7 @@ public class HomeFragment extends Fragment {
             }
         }
     }
-
-    //TODO
+    //每一项的点击事件
     class MainItemListener implements AdapterView.OnItemClickListener{
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -131,7 +136,6 @@ public class HomeFragment extends Fragment {
             intentItemDetailAc.putExtra("mainItem", (Serializable) mainItems.get(i));
             intentItemDetailAc.putExtra("index", i);
             startActivityForResult(intentItemDetailAc, ITEM_DETAIL);
-
         }
     }
 
@@ -139,32 +143,30 @@ public class HomeFragment extends Fragment {
     class RunUpdate implements Runnable {
         @Override
         public void run() {
-            readFromMain();
-            long leftTime = mainItems.get(mainItems.size()-1).getLeftTime();
             //倒计时效果展示
+            long leftTime = mainItems.get(mainItems.size()-1).getLeftTime();
             String formatLongToTimeStr = formatLongToTimeStr(leftTime);
             downcount_home.setText(formatLongToTimeStr);
 
-            //半秒执行一次
-            Updatehandler.postDelayed(this, 500);
+            Updatehandler.postDelayed(this, 1000);
         }
 
         public String formatLongToTimeStr(Long date) {
-            long day, hour, min, s;
+            long[] left = new long[]{0, 0, 0, 0};
             String strtime;
             if (date > 0){
-                day = date / (60 * 60 * 24);
-                hour = (date / (60 * 60) - day * 24);
-                min = ((date / 60) - day * 24 * 60 - hour * 60);
-                s = (date - day*24*60*60 - hour*60*60 - min*60);
-                strtime = "剩余"+day+"天"+hour+"小时"+min+"分"+s+"秒";
+                left[0] = date / (60 * 60 * 24);
+                left[1] = (date / (60 * 60) - left[0] * 24);
+                left[2] = ((date / 60) - left[0] * 24 * 60 - left[1] * 60);
+                left[3] = (date - left[0]*24*60*60 - left[1]*60*60 - left[2]*60);
+                strtime = "剩余"+left[0]+"天"+left[1]+"小时"+left[2]+"分"+left[3]+"秒";
             }else{
                 date = -date;
-                day = date / (60 * 60 * 24);
-                hour = (date / (60 * 60) - day * 24);
-                min = ((date / 60) - day * 24 * 60 - hour * 60);
-                s = (date - day*24*60*60 - hour*60*60 - min*60);
-                strtime = "已过"+day+"天"+hour+"小时"+min+"分"+s+"秒";
+                left[0] = date / (60 * 60 * 24);
+                left[1] = (date / (60 * 60) - left[0] * 24);
+                left[2] = ((date / 60) - left[0] * 24 * 60 - left[1] * 60);
+                left[3] = (date - left[0]*24*60*60 - left[1]*60*60 - left[2]*60);
+                strtime = "已过"+left[0]+"天"+left[1]+"小时"+left[2]+"分"+left[3]+"秒";
             }
 
             return strtime;

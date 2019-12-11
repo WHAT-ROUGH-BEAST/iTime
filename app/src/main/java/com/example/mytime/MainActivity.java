@@ -27,6 +27,8 @@ import androidx.appcompat.widget.Toolbar;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -58,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         mainItems = new ArrayList<>();
         ArrayList<String> defaultlabel = new ArrayList<String>();
         defaultlabel.add("1");
-        mainItems.add(new MainItem(R.drawable.default_img, "title", "tip", "2020.12.7",
+        mainItems.add(new MainItem(R.drawable.default_img, "title", "tip", "2020.12.11",
                 defaultlabel, "每天", "0"));//default
 
         //最上方的部分
@@ -81,20 +83,37 @@ public class MainActivity extends AppCompatActivity {
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
-        update();
 
         //倒计时线程
-        for(MainItem item : mainItems){
-            setLeftTime(item);
-        }
         update_thread = new RunUpdate();
         handlerStop = new HandlerStop();
         update_thread.run();
+
+        update();
 
         //测选单的不同选项Listener
 //        navigationView.setNavigationItemSelectedListener(new NavSelectedListener());
 
         //为mainitem添加序列化//TODO
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        for(MainItem item : mainItems){
+            setLeftTime(item);
+            item.setTextOnImg(updateTextOnImg(item.getLeftTime()));
+        }
+        update();
+    }
+
+    @Override
+    protected void onDestroy() {
+        //停止计时线程
+        Message message = new Message();
+        message.what = 1;
+        handlerStop.sendMessage(message);
+        super.onDestroy();
     }
 
     @Override
@@ -115,20 +134,20 @@ public class MainActivity extends AppCompatActivity {
                 if (CREAT_GET_RET == resultCode){
                     try{
                         assert data != null;
-                        mainItems.add(new MainItem(
+                        MainItem m = new MainItem(
                                 data.getIntExtra("resId", R.drawable.default_img),
                                 data.getStringExtra("title"),
                                 data.getStringExtra("tip"),
                                 data.getStringExtra("date"),
                                 data.getStringArrayListExtra("label"),
                                 data.getStringExtra("repeat"),
-                                "0"));
+                                "0");
+                        setLeftTime(m);
+                        m.setTextOnImg(updateTextOnImg(m.getLeftTime()));
+                        mainItems.add(m);
                         //label, repeat只对main有意义：判断标签以及倒计时间；
-
-                        Log.d("creat_ret", "create_ret data != null " + mainItems.get(1).getLabel());//tags--String
                     }catch (Exception e){
                         Log.d("creat_ret", "create_ret data == null");
-                        break;
                     }
                 }
                 break;
@@ -138,10 +157,13 @@ public class MainActivity extends AppCompatActivity {
                 //TODO
                 //返回的是一个mainitem
                 if (resultCode == ITEM_DETAIL_DEL){
-                    //删除
+                    int index = getIntent().getIntExtra("del_index", 0);
+                    mainItems.remove(index);
                 }else if (resultCode == ITEM_DETAIL_CHANGE){
-                    //更新
+                    int index = getIntent().getIntExtra("change_index", 0);
+                    mainItems.set(index, (MainItem) getIntent().getSerializableExtra("changeItem"));
                 }
+                break;
             } //END OF CASE
             default:
                 break;
@@ -152,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
         //因此选择每次点击进入fragment都刷新一次
         //public MainItem(int imgId, String title, String tip, String date)
         //更新数据
-        update();
+//        update();
     }
 
     class FabListener implements View.OnClickListener {
@@ -170,20 +192,20 @@ public class MainActivity extends AppCompatActivity {
         bundle.putSerializable("items", itemPack);
 //        nav_home
         navController.navigate(R.id.nav_home, bundle);
+//        navController.navigate(R.id.nav_send, bundle);
     }
 
-    //初始化倒计时
+    //剩余时间
     private void setLeftTime(MainItem mainItem){
-        String[] ddltime_str = mainItems.get(mainItems.size()-1).getDate().split("\\.");
-        Calendar calendar_now = Calendar.getInstance();
-        Calendar calendar_ddl = Calendar.getInstance();
+        String[] ddltime_str = mainItem.getDate().split("\\.");
+        Calendar calendar_now = Calendar.getInstance(Locale.CHINA);
+        Calendar calendar_ddl = Calendar.getInstance(Locale.CHINA);
         try{
             calendar_ddl.set(Integer.parseInt(ddltime_str[0]),
                     Integer.parseInt(ddltime_str[1]) - 1,
-                    Integer.parseInt(ddltime_str[2]));
-            calendar_ddl.getTimeInMillis();
+                    Integer.parseInt(ddltime_str[2]),
+                    0, 0, 0);
             mainItem.setLeftTime((calendar_ddl.getTimeInMillis() - calendar_now.getTimeInMillis())/1000);
-            Log.d("getLeftTime", mainItem.getLeftTime()+"");
         }catch (Exception e){
             mainItem.setLeftTime(0);
         }
@@ -195,8 +217,10 @@ public class MainActivity extends AppCompatActivity {
             try{
                 for(MainItem item : mainItems){
                     item.setLeftTime(item.getLeftTime()-1);
+                    item.setTextOnImg(updateTextOnImg(item.getLeftTime()));
+                    Log.d("here", item.getLeftTime()+"");
                 }
-                update();
+//                update();
                 handler.postDelayed(this, 1000);
             } catch (Exception e){
                 Message message = new Message();
@@ -216,6 +240,40 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    static public String updateTextOnImg(Long date) {
+        long[] left = new long[]{0, 0, 0, 0};
+        String[] s = {"天", "小时", "分", "秒"};
+//            long day, hour, min, s;
+        String strtime = "";
+        if (date > 0){
+            left[0] = date / (60 * 60 * 24);
+            left[1] = (date / (60 * 60) - left[0] * 24);
+            left[2] = ((date / 60) - left[0] * 24 * 60 - left[1] * 60);
+            left[3] = (date - left[0]*24*60*60 - left[1]*60*60 - left[2]*60);
+            for (int i = 0; i < left.length; i++){
+                if(left[i] != 0){
+                    strtime = "剩余"+left[i]+s[i];
+                    break;
+                }
+            }
+        }else{
+            date = -date;
+            left[0] = date / (60 * 60 * 24);
+            left[1] = (date / (60 * 60) - left[0] * 24);
+            left[2] = ((date / 60) - left[0] * 24 * 60 - left[1] * 60);
+            left[3] = (date - left[0]*24*60*60 - left[1]*60*60 - left[2]*60);
+            strtime = "已过"+left[0]+"天"+left[1]+"小时"+left[2]+"分"+left[3]+"秒";
+            for (int i = 0; i < left.length; i++){
+                if(left[i] != 0){
+                    strtime = "已过"+left[i]+s[i];
+                    break;
+                }
+            }
+        }
+
+        return strtime;
+    }
+
     //    //侧边栏监听事件
 //    class NavSelectedListener implements NavigationView.OnNavigationItemSelectedListener{
 //        @Override
@@ -225,7 +283,7 @@ public class MainActivity extends AppCompatActivity {
 //                    Toast.makeText(MainActivity.this, "Home is clicked!", Toast.LENGTH_SHORT).show();
 //                    break;
 //                default:
-//                    //后期实现label中的传值//TODO
+//                    //后期实现label中的传值
 //                    break;
 //            }
 //            drawer.closeDrawer(navigationView);

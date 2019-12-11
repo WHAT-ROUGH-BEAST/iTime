@@ -53,4 +53,8 @@ public class MainItem implements Serializable {
     public void setLeftTime(long time){
         leftTime = time;
     }
+
+    public void setTextOnImg(String s){
+        textOnImg = s;
+    }
 }

@@ -2,6 +2,7 @@ package com.example.mytime.ui;
 
 import android.annotation.SuppressLint;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -20,6 +21,8 @@ import android.widget.TextView;
 import com.example.mytime.R;
 import com.example.mytime.data.model.MainItem;
 import com.example.mytime.ui.home.HomeFragment;
+
+import java.io.Serializable;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -107,7 +110,7 @@ public class ItemDetailActivity extends AppCompatActivity {
 
     private static final int ITEM_DETAIL_DEL = 101;
     private static final int ITEM_DETAIL_CHANGE = 102;
-        private static final int ITEM_DETAIL_BACK = 103;
+//        private static final int ITEM_DETAIL_BACK = 103;
 
     private MainItem thismainItem;
     private Runnable update_thread;
@@ -121,7 +124,31 @@ public class ItemDetailActivity extends AppCompatActivity {
     private int index;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch(requestCode){
+            case ITEM_DETAIL_CHANGE:
+                MainItem changeItem = new MainItem(
+                        data.getIntExtra("resId", R.drawable.default_img),
+                        data.getStringExtra("title"),
+                        data.getStringExtra("tip"),
+                        data.getStringExtra("date"),
+                        data.getStringArrayListExtra("label"),
+                        data.getStringExtra("repeat"),
+                        thismainItem.getTextOnImg());
+
+                changeItem.setLeftTime(thismainItem.getLeftTime());
+                Intent intent = new Intent();
+                intent.putExtra("changeItem", (Serializable)changeItem);
+                intent.putExtra("change_index", index);
+                setResult(ITEM_DETAIL_CHANGE, intent);
+                finish();
+                break;
+        }
+    }
+
+    @Override
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_detail);
 
@@ -158,8 +185,24 @@ public class ItemDetailActivity extends AppCompatActivity {
         btn_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO: ITEM_DETAIL_BACK
                 finish();
+            }
+        });
+        btn_del.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent();
+                intent.putExtra("del_index", index);
+                setResult(ITEM_DETAIL_DEL, intent);
+                finish();
+            }
+        });
+        btn_change.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //TODO
+                Intent intent = new Intent(ItemDetailActivity.this, CreateActivity.class);
+                startActivityForResult(intent, ITEM_DETAIL_CHANGE);
             }
         });
     }//: END OF onCreate
@@ -185,11 +228,11 @@ public class ItemDetailActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         //发送消息，结束倒计时
         Message message = new Message();
         message.what = 1;
         handlerStop.sendMessage(message);
+        super.onDestroy();
     }
 
     private void toggle() {

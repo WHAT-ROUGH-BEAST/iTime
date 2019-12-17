@@ -2,12 +2,14 @@ package com.example.itime.data;
 
 import com.example.itime.data.model.MainItem;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
-public class ItemPack implements Serializable {
-    private static final long serialVersionUID = 7382351359868556980L;
-    private ArrayList<MainItem> mainItems = new ArrayList<>();
+public class KeepData {
+    private ArrayList<MainItem> mainItems;
+
+    public KeepData(ArrayList<MainItem> mainItems){
+        this.mainItems = mainItems;
+    }
 
     public void setMainItems(ArrayList<MainItem> mainItems){
         this.mainItems = mainItems;
@@ -15,5 +17,11 @@ public class ItemPack implements Serializable {
 
     public ArrayList<MainItem> getMainItems(){
         return mainItems;
+    }
+
+    public void updateTime(){
+        for (MainItem m : mainItems){
+            m.setLeftTime(m.getLeftTime()-1);
+        }
     }
 }

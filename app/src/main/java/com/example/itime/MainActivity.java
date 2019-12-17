@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.example.itime.data.KeepData;
 import com.example.itime.data.MainItemAdapter;
 import com.example.itime.data.model.MainItem;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -50,8 +51,11 @@ public class MainActivity extends AppCompatActivity {
     private ImageView mainImg;
     private TextView title, date, downcount;
     private ListView mainlistView;
-    private ArrayList<MainItem> mainItems;
+    private ArrayList<MainItem> mainItemDisplay;
     private MainItemAdapter mainItemAdapter;
+
+    //数据
+    private ArrayList<MainItem> mainItems;
 
     //刷新
     private Handler handler = new Handler();
@@ -145,28 +149,35 @@ public class MainActivity extends AppCompatActivity {
         drawerList.setAdapter(drawerItemAdapter);
         drawerList.setOnItemClickListener(new ItemListener());
 
+        //data
+        initMainItems();
+
         //页面
         mainImg = findViewById(R.id.img_home);
         title = findViewById(R.id.title_home);
         date = findViewById(R.id.date_home);
         downcount = findViewById(R.id.downcount_home);
         mainlistView = findViewById(R.id.list_home);
-
-        initMainItems();
-        initPage();
+        mainItemDisplay = new ArrayList<>(mainItems);//不能直接给引用
 
         mainItemAdapter = new MainItemAdapter(MainActivity.this,
-                R.layout.item_main, mainItems);
+                R.layout.item_main, mainItemDisplay);
         mainlistView.setAdapter(mainItemAdapter);
         mainlistView.setOnItemClickListener(new MainItemListener());
+
+        //downcount
+        update_thread = new RunUpdate();
+        handlerStop = new HandlerStop();
+        update_thread.run();
+
     }//END OF ONCREATE
 
     @Override
     public void onStart() {
-        if (0 == mainItems.size()) {
-            title.setText("nope");
-            date.setText("nope");
-        }
+        //默认每次返回后进入home页面
+        mainItemDisplay.clear();mainItemDisplay.addAll(mainItems);
+        initPage();
+
         super.onStart();
     }//: end of onStart
 
@@ -183,17 +194,17 @@ public class MainActivity extends AppCompatActivity {
     class RunUpdate implements Runnable {
         @Override
         public void run() {
+            //data
             try{
                 for(MainItem item : mainItems){
                     item.setLeftTime(item.getLeftTime()-1);
                     item.setTextOnImg(updateTextOnImg(item.getLeftTime()));
-                    Log.d("here", item.getLeftTime()+"");
                 }
-                //更新主页时间
-                if (0 == mainItems.size()){
+                //更新主页
+                if (0 == mainItemDisplay.size()){
                     downcount.setText("nope");
                 }else{
-                    long leftTime = mainItems.get(mainItems.size()-1).getLeftTime();
+                    long leftTime = mainItemDisplay.get(mainItemDisplay.size()-1).getLeftTime();
                     String formatLongToTimeStr = formatLongToTimeStr(leftTime);
                     downcount.setText(formatLongToTimeStr);
                 }
@@ -229,12 +240,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //drawer点击事件
+    //每一次drawer都会重新打开ac
     class ItemListener implements AdapterView.OnItemClickListener{
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             switch (i){
                 case 0:
                     //home
+                    mainItemDisplay.clear();mainItemDisplay.addAll(mainItems);
+                    mainItemAdapter.notifyDataSetChanged();
                     break;
                 case 1:
                     //color
@@ -242,7 +256,14 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(intent);
                     break;
                 default:
-                    //tag
+                    //label
+                    for (MainItem m : mainItems){ //mainTiems size == 0
+                        if (!m.getLabel().contains(drawerItemAdapter.getItem(i))){
+                            mainItemDisplay.remove(m);
+                        }
+                    }
+                    mainItemAdapter.notifyDataSetChanged();
+                    initPage();
                     break;
             }
         }
@@ -254,13 +275,13 @@ public class MainActivity extends AppCompatActivity {
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             Intent intent = new Intent(MainActivity.this, ItemDetailActivity.class);
             intent.putExtra("index", i);
-            intent.putExtra("resId", mainItems.get(i).getImgId());
-            intent.putExtra("title", mainItems.get(i).getTitle());
-            intent.putExtra("tip", mainItems.get(i).getTip());
-            intent.putExtra("date", mainItems.get(i).getDate());
-            intent.putExtra("lable", mainItems.get(i).getLabel());
-            intent.putExtra("repeat", mainItems.get(i).getRepeat());
-            intent.putExtra("repeat", mainItems.get(i).getLeftTime());
+            intent.putExtra("resId", mainItemDisplay.get(i).getImgId());
+            intent.putExtra("title", mainItemDisplay.get(i).getTitle());
+            intent.putExtra("tip", mainItemDisplay.get(i).getTip());
+            intent.putExtra("date", mainItemDisplay.get(i).getDate());
+            intent.putExtra("lable", mainItemDisplay.get(i).getLabel());
+            intent.putExtra("repeat", mainItemDisplay.get(i).getRepeat());
+            intent.putExtra("repeat", mainItemDisplay.get(i).getLeftTime());
             startActivityForResult(intent, ITEM_DETAIL);
         }
     }
@@ -268,8 +289,8 @@ public class MainActivity extends AppCompatActivity {
     private void initMainItems(){
         mainItems = new ArrayList<>();
         ArrayList<String> defaultlabel = new ArrayList<String>();
-        defaultlabel.add("1");
-        mainItems.add(new MainItem(R.drawable.default_img, "title", "tip", "2020.12.11",
+        defaultlabel.add("学习");
+        mainItems.add(new MainItem(R.drawable.default_img, "TITLE", "TIP", "2020.12.20",
                 defaultlabel, "每天", "0"));//default
         for(MainItem item : mainItems){
             setLeftTime(item);
@@ -277,14 +298,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     private void initPage(){
-        MainItem m = mainItems.get(mainItems.size()-1);
-        title.setText(m.getTitle());
-        date.setText(m.getDate());
-        mainImg.setImageResource(m.getImgId());
-        //downcount
-        update_thread = new RunUpdate();
-        handlerStop = new HandlerStop();
-        update_thread.run();
+        if (0 == mainItemDisplay.size()) {
+            title.setText("nope");
+            date.setText("nope");
+            downcount.setText("nope");
+            mainImg.setImageResource(R.drawable.default_img);
+        } else {
+            MainItem m = mainItemDisplay.get(mainItemDisplay.size()-1);
+            title.setText(m.getTitle());
+            date.setText(m.getDate());
+            mainImg.setImageResource(m.getImgId());
+        }
     }
 
     //剩余时间

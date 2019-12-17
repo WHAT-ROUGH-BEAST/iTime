@@ -25,6 +25,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -199,6 +200,12 @@ public class MainActivity extends AppCompatActivity {
                 for(MainItem item : mainItems){
                     item.setLeftTime(item.getLeftTime()-1);
                     item.setTextOnImg(updateTextOnImg(item.getLeftTime()));
+
+                    //时间到的提示
+                    if (0 == item.getLeftTime()){
+                        Toast.makeText(getApplicationContext(), item.getTitle()+" RING!",
+                                Toast.LENGTH_LONG).show();
+                    }
                 }
                 //更新主页
                 if (0 == mainItemDisplay.size()){
@@ -281,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("date", mainItemDisplay.get(i).getDate());
             intent.putExtra("lable", mainItemDisplay.get(i).getLabel());
             intent.putExtra("repeat", mainItemDisplay.get(i).getRepeat());
-            intent.putExtra("repeat", mainItemDisplay.get(i).getLeftTime());
+//            intent.putExtra("leftTime", mainItemDisplay.get(i).getLeftTime());
             startActivityForResult(intent, ITEM_DETAIL);
         }
     }
@@ -290,7 +297,7 @@ public class MainActivity extends AppCompatActivity {
         mainItems = new ArrayList<>();
         ArrayList<String> defaultlabel = new ArrayList<String>();
         defaultlabel.add("学习");
-        mainItems.add(new MainItem(R.drawable.default_img, "TITLE", "TIP", "2020.12.20",
+        mainItems.add(new MainItem(R.drawable.default_img, "TITLE", "TIP", "2019.12.17.0.0.0",
                 defaultlabel, "每天", "0"));//default
         for(MainItem item : mainItems){
             setLeftTime(item);
@@ -314,13 +321,15 @@ public class MainActivity extends AppCompatActivity {
     //剩余时间
     public static void setLeftTime(MainItem mainItem){
         String[] ddltime_str = mainItem.getDate().split("\\.");
-        Calendar calendar_now = Calendar.getInstance(TimeZone.getDefault(), Locale.CHINA);
-        Calendar calendar_ddl = Calendar.getInstance(TimeZone.getDefault(), Locale.CHINA);
+        Calendar calendar_now = Calendar.getInstance();
+        Calendar calendar_ddl = Calendar.getInstance();
         try{
             calendar_ddl.set(Integer.parseInt(ddltime_str[0]),
                     Integer.parseInt(ddltime_str[1]) - 1,
                     Integer.parseInt(ddltime_str[2]),
-                    0, 0, 0);
+                    Integer.parseInt(ddltime_str[3]) - 8,
+                    Integer.parseInt(ddltime_str[4]),
+                    Integer.parseInt(ddltime_str[5]));
             mainItem.setLeftTime((calendar_ddl.getTimeInMillis() - calendar_now.getTimeInMillis())/1000);
         }catch (Exception e){
             mainItem.setLeftTime(0);

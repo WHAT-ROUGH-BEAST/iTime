@@ -192,7 +192,6 @@ public class ItemDetailActivity extends AppCompatActivity {
         setLeftTime(thismainItem);
         thismainItem.setTextOnImg(updateTextOnImg(thismainItem.getLeftTime()));
         index = intent.getIntExtra("index", 0);
-
     }
 
     @Override

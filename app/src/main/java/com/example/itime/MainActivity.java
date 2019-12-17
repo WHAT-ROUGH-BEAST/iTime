@@ -32,6 +32,7 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
+//TODO: 改颜色 上传图片 bar上的label标志
 public class MainActivity extends AppCompatActivity {
 
     private static final int CREAT_RET = 1;

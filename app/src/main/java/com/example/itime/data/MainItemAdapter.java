@@ -1,5 +1,6 @@
 package com.example.itime.data;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +26,7 @@ public class MainItemAdapter extends ArrayAdapter<MainItem> {
         this.resourceId = resource;
     }
 
+    @SuppressLint("SetTextI18n")
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -36,10 +38,12 @@ public class MainItemAdapter extends ArrayAdapter<MainItem> {
                 date = (TextView)view.findViewById(R.id.item_date),
                 textOnImg = (TextView)view.findViewById(R.id.item_text_on_img);
 
+        String[] date_str = mainItem.getDate().split("\\.");
+        date.setText(date_str[0]+"."+date_str[1]+"."+date_str[2]);
         imageView.setImageResource(mainItem.getImgId());
         title.setText(mainItem.getTitle());
         tip.setText(mainItem.getTip());
-        date.setText(mainItem.getDate());
+//        date.setText(mainItem.getDate());
         textOnImg.setText(mainItem.getTextOnImg());
         return view;
     }

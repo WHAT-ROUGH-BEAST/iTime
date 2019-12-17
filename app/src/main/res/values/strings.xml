@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">MyTime</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_tag">tag</string>
+    <string name="menu_tools">Color</string>
+
+    <string name="create_title">标题</string>
+    <string name="create_tip">备注</string>
+    <string name="create_default">请输入</string>
+
+    <string name="dialog_text">请输入ddl</string>
+    <string name="dialog_edit_year">年</string>
+    <string name="dialog_edit_month">月</string>
+    <string name="dialog_edit_day">日</string>
+
+    <string name="dialog_text_label">请选择标签</string>
+    <string name="dialog_button1">学习</string>
+    <string name="dialog_button2">生活</string>
+
+    <string name="title_activity_item_detail">ItemDetailActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+
+</resources>

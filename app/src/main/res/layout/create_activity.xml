@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/create_no"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginVertical="@dimen/activity_vertical_margin"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="120dp"
+            android:backgroundTint="@color/colorPrimary"
+            android:src="@drawable/back"
+            tools:ignore="ButtonStyle" />
+
+        <ImageButton
+            android:id="@+id/create_yes"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginVertical="@dimen/activity_vertical_margin"
+            android:layout_marginLeft="120dp"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:backgroundTint="@color/colorPrimary"
+            android:src="@drawable/add"
+            tools:ignore="ButtonStyle" />
+
+    </LinearLayout>
+
+    <LinearLayout android:layout_height="fill_parent"
+        android:layout_width="fill_parent"
+        android:background="@color/colorPrimary"
+        android:layout_weight="1.7"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/create_title"
+            android:text="@string/create_title"
+            android:textColor="@color/white"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+            android:layout_weight="1"
+            tools:targetApi="o"
+            tools:ignore="NestedWeights" />
+        <EditText
+            android:id="@+id/create_title_edit"
+            android:textColorHint="@color/white"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:hint="@string/create_default"
+            android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+            android:layout_weight="1"
+            tools:targetApi="o" />
+
+        <TextView
+            android:id="@+id/create_tip"
+            android:text="@string/create_tip"
+            android:textColor="@color/white"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+            android:layout_weight="1"
+            tools:targetApi="o" />
+        <EditText
+            android:id="@+id/create_tip_edit"
+            android:textColorHint="@color/white"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:hint="@string/create_default"
+            android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_weight="1"
+            tools:targetApi="o" />
+
+    </LinearLayout>
+
+    <LinearLayout android:layout_height="fill_parent"
+        android:layout_width="fill_parent"
+        android:layout_weight="1">
+
+        <ListView
+            android:id = "@+id/list_record"
+            android:layout_height="fill_parent"
+            android:layout_width="fill_parent" />
+
+    </LinearLayout>
+
+</LinearLayout>

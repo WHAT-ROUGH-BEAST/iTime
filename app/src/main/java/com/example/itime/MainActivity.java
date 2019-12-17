@@ -1,0 +1,361 @@
+package com.example.itime;
+
+import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.os.Bundle;
+
+import com.example.itime.data.MainItemAdapter;
+import com.example.itime.data.model.MainItem;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
+import android.view.View;
+
+import androidx.annotation.Nullable;
+import androidx.drawerlayout.widget.DrawerLayout;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.TimeZone;
+
+public class MainActivity extends AppCompatActivity {
+
+    private static final int CREAT_RET = 1;
+    private static final int CREAT_GET_RET = 1;
+    private static final int ITEM_DETAIL = 100;
+    private static final int ITEM_DETAIL_DEL = 101;
+    private static final int ITEM_DETAIL_CHANGE = 102;
+
+    //部件
+    protected Intent intentFab;
+    private Toolbar toolbar;
+    private FloatingActionButton fab;
+    private ListView drawerList;
+    private ArrayList<String> drawerItem;
+    private ArrayAdapter<String> drawerItemAdapter;
+
+    //页面
+    private ImageView mainImg;
+    private TextView title, date, downcount;
+    private ListView mainlistView;
+    private ArrayList<MainItem> mainItems;
+    private MainItemAdapter mainItemAdapter;
+
+    //刷新
+    private Handler handler = new Handler();
+    private Runnable update_thread;
+    private Handler handlerStop;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode){
+            case CREAT_RET:
+                if (CREAT_GET_RET == resultCode){
+                    getMainItemChanges(data);
+                }
+                break;
+                //END OF CASE
+            case ITEM_DETAIL:
+                if(ITEM_DETAIL_DEL == resultCode){
+                    int index = data.getIntExtra("index", 0);
+                    mainItems.remove(index);
+                    mainItemAdapter.notifyDataSetChanged();
+                }
+                else if (ITEM_DETAIL_CHANGE == resultCode){
+                    getMainItemChanges(data);
+                }
+                break;
+            default:
+                Log.i("strange", "someone else pass back");
+                break;
+        }
+    }
+    private void getMainItemChanges(Intent data){
+        if (null != data.getStringExtra("textOnImg")){
+            MainItem m = new MainItem(
+                    data.getIntExtra("resId", R.drawable.default_img),
+                    data.getStringExtra("title"),
+                    data.getStringExtra("tip"),
+                    data.getStringExtra("date"),
+                    data.getStringArrayListExtra("label"),
+                    data.getStringExtra("repeat"),
+                    data.getStringExtra("textOnImg"));
+            m.setLeftTime(data.getLongExtra("leftTime", 0));
+
+            mainItems.set(data.getIntExtra("index", 0), m);
+            mainItemAdapter.notifyDataSetChanged();
+        }else{
+            try{
+                assert data != null;
+                MainItem m = new MainItem(
+                        data.getIntExtra("resId", R.drawable.default_img),
+                        data.getStringExtra("title"),
+                        data.getStringExtra("tip"),
+                        data.getStringExtra("date"),
+                        data.getStringArrayListExtra("label"),
+                        data.getStringExtra("repeat"),
+                        "0");
+                setLeftTime(m);
+                m.setTextOnImg(updateTextOnImg(m.getLeftTime()));
+                mainItems.add(m);
+                mainItemAdapter.notifyDataSetChanged();
+                //label, repeat只对main有意义：判断标签以及倒计时间；
+            }catch (Exception e){
+                Log.d("creat_ret", "create_ret data == null");
+            }
+        }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        //工具栏
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        //按钮
+        fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new FabListener());
+
+        //侧滑单
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawerList = findViewById(R.id.drawer_list);
+        drawerItem = new ArrayList<>();
+        drawerItem.add("主页");
+        drawerItem.add("主题色");
+        drawerItem.add("学习");
+        drawerItem.add("玩");
+        drawerItemAdapter = new ArrayAdapter<String>(MainActivity.this,
+                android.R.layout.simple_list_item_1, drawerItem);
+        drawerList.setAdapter(drawerItemAdapter);
+        drawerList.setOnItemClickListener(new ItemListener());
+
+        //页面
+        mainImg = findViewById(R.id.img_home);
+        title = findViewById(R.id.title_home);
+        date = findViewById(R.id.date_home);
+        downcount = findViewById(R.id.downcount_home);
+        mainlistView = findViewById(R.id.list_home);
+
+        initMainItems();
+
+        mainItemAdapter = new MainItemAdapter(MainActivity.this,
+                R.layout.item_main, mainItems);
+        mainlistView.setAdapter(mainItemAdapter);
+        mainlistView.setOnItemClickListener(new MainItemListener());
+    }//END OF ONCREATE
+
+    @Override
+    public void onStart() {
+        if (0 == mainItems.size()){
+            title.setText("nope");
+            date.setText("nope");
+        }else{
+            initPage();
+        }
+        super.onStart();
+    }
+
+    @Override
+    public void onDestroy() {
+        //发送消息，结束子线程
+        Message message = new Message();
+        message.what = 1;
+        handlerStop.sendMessage(message);
+        super.onDestroy();
+    }//: end of onDestroy
+
+    //倒计时线程
+    class RunUpdate implements Runnable {
+        @Override
+        public void run() {
+            try{
+                for(MainItem item : mainItems){
+                    item.setLeftTime(item.getLeftTime()-1);
+                    item.setTextOnImg(updateTextOnImg(item.getLeftTime()));
+                    Log.d("here", item.getLeftTime()+"");
+                }
+                //更新主页时间
+                if (0 == mainItems.size()){
+                    downcount.setText("nope");
+                }else{
+                    long leftTime = mainItems.get(mainItems.size()-1).getLeftTime();
+                    String formatLongToTimeStr = formatLongToTimeStr(leftTime);
+                    downcount.setText(formatLongToTimeStr);
+                }
+
+                handler.postDelayed(this, 1000);
+            } catch (Exception e){
+                Message message = new Message();
+                message.what = 1;
+                handlerStop.sendMessage(message);
+            }
+        }
+    }
+
+    @SuppressLint("HandlerLeak")
+    class HandlerStop extends Handler {
+        public void handleMessage(Message msg) {
+            if (msg.what == 1) {
+                handler.removeCallbacks(update_thread);
+            } else {
+                throw new IllegalStateException("Unexpected value: " + msg.what);
+            }
+            super.handleMessage(msg);
+        }
+    }
+
+    //按钮点击事件
+    class FabListener implements View.OnClickListener {
+        @Override
+        public void onClick(View view) {
+            intentFab = new Intent(MainActivity.this, CreateActivity.class);
+            startActivityForResult(intentFab, CREAT_RET);
+        }
+    }
+
+    //drawer点击事件
+    class ItemListener implements AdapterView.OnItemClickListener{
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            switch (i){
+                case 0:
+                    //home
+                    break;
+                case 1:
+                    //color
+                    Intent intent = new Intent(MainActivity.this, ColorActivity.class);
+                    startActivity(intent);
+                    break;
+                default:
+                    //tag
+                    break;
+            }
+        }
+    }
+
+    //mainlistView点击事件
+    class MainItemListener implements AdapterView.OnItemClickListener{
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            Intent intent = new Intent(MainActivity.this, ItemDetailActivity.class);
+            intent.putExtra("index", i);
+            intent.putExtra("resId", mainItems.get(i).getImgId());
+            intent.putExtra("title", mainItems.get(i).getTitle());
+            intent.putExtra("tip", mainItems.get(i).getTip());
+            intent.putExtra("date", mainItems.get(i).getDate());
+            intent.putExtra("lable", mainItems.get(i).getLabel());
+            intent.putExtra("repeat", mainItems.get(i).getRepeat());
+            intent.putExtra("repeat", mainItems.get(i).getLeftTime());
+            startActivityForResult(intent, ITEM_DETAIL);
+        }
+    }
+
+    private void initMainItems(){
+        mainItems = new ArrayList<>();
+        ArrayList<String> defaultlabel = new ArrayList<String>();
+        defaultlabel.add("1");
+        mainItems.add(new MainItem(R.drawable.default_img, "title", "tip", "2020.12.11",
+                defaultlabel, "每天", "0"));//default
+        for(MainItem item : mainItems){
+            setLeftTime(item);
+            item.setTextOnImg(updateTextOnImg(item.getLeftTime()));
+        }
+    }
+    private void initPage(){
+        MainItem m = mainItems.get(mainItems.size()-1);
+        title.setText(m.getTitle());
+        date.setText(m.getDate());
+        mainImg.setImageResource(m.getImgId());
+        //downcount
+        update_thread = new RunUpdate();
+        handlerStop = new HandlerStop();
+        update_thread.run();
+    }
+
+    //剩余时间
+    public static void setLeftTime(MainItem mainItem){
+        String[] ddltime_str = mainItem.getDate().split("\\.");
+        Calendar calendar_now = Calendar.getInstance(TimeZone.getDefault(), Locale.CHINA);
+        Calendar calendar_ddl = Calendar.getInstance(TimeZone.getDefault(), Locale.CHINA);
+        try{
+            calendar_ddl.set(Integer.parseInt(ddltime_str[0]),
+                    Integer.parseInt(ddltime_str[1]) - 1,
+                    Integer.parseInt(ddltime_str[2]),
+                    0, 0, 0);
+            mainItem.setLeftTime((calendar_ddl.getTimeInMillis() - calendar_now.getTimeInMillis())/1000);
+        }catch (Exception e){
+            mainItem.setLeftTime(0);
+        }
+    }
+    //更新每一项显示的剩余时间
+    public static String updateTextOnImg(Long date) {
+        long[] left = new long[]{0, 0, 0, 0};
+        String[] s = {"天", "小时", "分", "秒"};
+//            long day, hour, min, s;
+        String strtime = "";
+        if (date > 0){
+            left[0] = date / (60 * 60 * 24);
+            left[1] = (date / (60 * 60) - left[0] * 24);
+            left[2] = ((date / 60) - left[0] * 24 * 60 - left[1] * 60);
+            left[3] = (date - left[0]*24*60*60 - left[1]*60*60 - left[2]*60);
+            for (int i = 0; i < left.length; i++){
+                if(left[i] != 0){
+                    strtime = "剩余"+left[i]+s[i];
+                    break;
+                }
+            }
+        }else{
+            date = -date;
+            left[0] = date / (60 * 60 * 24);
+            left[1] = (date / (60 * 60) - left[0] * 24);
+            left[2] = ((date / 60) - left[0] * 24 * 60 - left[1] * 60);
+            left[3] = (date - left[0]*24*60*60 - left[1]*60*60 - left[2]*60);
+            strtime = "已过"+left[0]+"天"+left[1]+"小时"+left[2]+"分"+left[3]+"秒";
+            for (int i = 0; i < left.length; i++){
+                if(left[i] != 0){
+                    strtime = "已过"+left[i]+s[i];
+                    break;
+                }
+            }
+        }
+
+        return strtime;
+    }
+
+    public static String formatLongToTimeStr(Long date) {
+        long[] left = new long[]{0, 0, 0, 0};
+        String strtime;
+        if (date > 0){
+            left[0] = date / (60 * 60 * 24);
+            left[1] = (date / (60 * 60) - left[0] * 24);
+            left[2] = ((date / 60) - left[0] * 24 * 60 - left[1] * 60);
+            left[3] = (date - left[0]*24*60*60 - left[1]*60*60 - left[2]*60);
+            strtime = "剩余"+left[0]+"天"+left[1]+"小时"+left[2]+"分"+left[3]+"秒";
+        }else{
+            date = -date;
+            left[0] = date / (60 * 60 * 24);
+            left[1] = (date / (60 * 60) - left[0] * 24);
+            left[2] = ((date / 60) - left[0] * 24 * 60 - left[1] * 60);
+            left[3] = (date - left[0]*24*60*60 - left[1]*60*60 - left[2]*60);
+            strtime = "已过"+left[0]+"天"+left[1]+"小时"+left[2]+"分"+left[3]+"秒";
+        }
+
+        return strtime;
+    }
+}

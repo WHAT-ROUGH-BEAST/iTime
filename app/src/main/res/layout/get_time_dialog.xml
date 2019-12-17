@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center">
+
+    <TextView
+        android:text="@string/dialog_text"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:textSize="@dimen/font_mid"
+        android:layout_weight="1"
+        android:layout_gravity="center"/>
+
+    <LinearLayout android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_weight="1"
+        android:layout_gravity="center">
+        <TextView
+            android:text="@string/dialog_edit_year"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:textSize="@dimen/font_small"
+            android:layout_weight="1" />
+        <EditText
+            android:id="@+id/edit_year"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:inputType="number"
+            android:text="@string/create_default"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:text="@string/dialog_edit_month"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:textSize="@dimen/font_small"
+            android:layout_weight="1"/>
+        <EditText
+            android:id="@+id/edit_month"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:inputType="number"
+            android:text="@string/create_default"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:text="@string/dialog_edit_day"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:textSize="@dimen/font_small"
+            android:layout_weight="1"/>
+        <EditText
+            android:id="@+id/edit_day"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:inputType="number"
+            android:text="@string/create_default"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+
+</LinearLayout>

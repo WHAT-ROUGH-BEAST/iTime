@@ -59,7 +59,7 @@ public class CreateActivity extends AppCompatActivity {
     private String[] date;
     private String tags;
     private String repeat;
-    private int resourceId;
+//    private int resourceId;
 
     private File imageFile = null;// 声明File对象
     private Uri imageUri = null;// 裁剪后的图片uri
@@ -79,7 +79,6 @@ public class CreateActivity extends AppCompatActivity {
         date = new String[6];
         tags = new String();
         repeat = new String();
-        resourceId = R.drawable.default_img;
 
         //ListView init
         initRecord();
@@ -104,7 +103,7 @@ public class CreateActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent();
                 //TODO:后期改为自己选图片
-                intent.putExtra("resId", resourceId);
+                intent.putExtra("resId", imageUri.toString());
                 intent.putExtra("title", title.getText().toString());
                 intent.putExtra("tip", tip.getText().toString());
                 intent.putExtra("date",
@@ -167,13 +166,8 @@ public class CreateActivity extends AppCompatActivity {
                     break;
 
                 case CROP_PHOTO:// 裁剪图片
-                    try{
-                        if (imageUri != null){
-                            resourceId = getResId(imageUri);
-                        }
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
+                    records.set(2,new Record(R.drawable.pic, "图片", imageUri.toString()));
+                    recordAdapter.notifyDataSetChanged();
 
                     break;
             }
@@ -197,7 +191,8 @@ public class CreateActivity extends AppCompatActivity {
     //获得资源id
     private int getResId(Uri imageUri) {
         Context ctx=getBaseContext();
-        int resId = getResources().getIdentifier(String.valueOf(imageUri), "drawable" , ctx.getPackageName());
+        String[] uris = String.valueOf(imageUri).split("/");
+        int resId = getResources().getIdentifier(uris[uris.length-1], "drawable" , ctx.getPackageName());
         return resId;
     }
 
@@ -368,7 +363,7 @@ public class CreateActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         repeat = items[checkedItem[0]];
 
-                        records.set(1,new Record(R.drawable.time, "重复设置", repeat));
+                        records.set(1,new Record(R.drawable.repeat, "重复设置", repeat));
                         recordAdapter.notifyDataSetChanged();
 
                         dialog.dismiss();

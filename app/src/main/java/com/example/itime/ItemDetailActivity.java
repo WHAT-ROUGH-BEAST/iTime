@@ -2,6 +2,7 @@ package com.example.itime;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -101,7 +102,7 @@ public class ItemDetailActivity extends AppCompatActivity {
         switch(requestCode){
             case ITEM_DETAIL_CHANGE:
                 Intent intent = new Intent();
-                intent.putExtra("resId", data.getIntExtra("resId", R.drawable.default_img));
+                intent.putExtra("resId", data.getStringExtra("resId"));
                 intent.putExtra("title", data.getStringExtra("title"));
                 intent.putExtra("tip", data.getStringExtra("tip"));
                 intent.putExtra("date", data.getStringExtra("date"));
@@ -153,6 +154,7 @@ public class ItemDetailActivity extends AppCompatActivity {
 
         title.setText(thismainItem.getTitle());
         date.setText(thismainItem.getDate());
+        img.setImageURI(Uri.parse(thismainItem.getImgId()));
 
 //        findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
         btn_back.setOnClickListener(new View.OnClickListener() {
@@ -182,7 +184,7 @@ public class ItemDetailActivity extends AppCompatActivity {
 
     private void getMainItemAttr(){
         Intent intent = getIntent();
-        thismainItem = new MainItem(intent.getIntExtra("resId", 0),
+        thismainItem = new MainItem(intent.getStringExtra("resId"),
                 intent.getStringExtra("title"),
                 intent.getStringExtra("tip"),
                 intent.getStringExtra("date"),

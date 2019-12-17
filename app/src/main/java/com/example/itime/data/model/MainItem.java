@@ -5,12 +5,12 @@ import java.util.ArrayList;
 
 public class MainItem implements Serializable {
     private String title, date, tip, textOnImg;
-    private int imgId;
+    private String imgId;
     private ArrayList<String> label;
     private String repeat;
     private long leftTime;
 
-    public MainItem(int imgId, String title, String tip, String date, ArrayList<String> label, String repeat, String textOnImg){
+    public MainItem(String imgId, String title, String tip, String date, ArrayList<String> label, String repeat, String textOnImg){
         this.imgId = imgId;
         this.title = title;
         this.tip = tip;
@@ -21,7 +21,7 @@ public class MainItem implements Serializable {
         this.repeat = repeat;
     }
 
-    public int getImgId() {
+    public String getImgId() {
         return imgId;
     }
 

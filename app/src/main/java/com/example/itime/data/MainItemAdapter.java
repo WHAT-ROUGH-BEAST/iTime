@@ -2,6 +2,7 @@ package com.example.itime.data;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +41,7 @@ public class MainItemAdapter extends ArrayAdapter<MainItem> {
 
         String[] date_str = mainItem.getDate().split("\\.");
         date.setText(date_str[0]+"."+date_str[1]+"."+date_str[2]);
-        imageView.setImageResource(mainItem.getImgId());
+        imageView.setImageURI(Uri.parse(mainItem.getImgId()));
         title.setText(mainItem.getTitle());
         tip.setText(mainItem.getTip());
 //        date.setText(mainItem.getDate());

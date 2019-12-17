@@ -2,6 +2,7 @@ package com.example.itime;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import com.example.itime.data.KeepData;
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int ITEM_DETAIL = 100;
     private static final int ITEM_DETAIL_DEL = 101;
     private static final int ITEM_DETAIL_CHANGE = 102;
+    private String DEFAULT_PIC;
 
     //部件
     protected Intent intentFab;
@@ -92,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
     private void getMainItemChanges(Intent data){
         if (null != data.getStringExtra("textOnImg")){
             MainItem m = new MainItem(
-                    data.getIntExtra("resId", R.drawable.default_img),
+                    data.getStringExtra("resId"),
                     data.getStringExtra("title"),
                     data.getStringExtra("tip"),
                     data.getStringExtra("date"),
@@ -107,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
             try{
                 assert data != null;
                 MainItem m = new MainItem(
-                        data.getIntExtra("resId", R.drawable.default_img),
+                        data.getStringExtra("resId"),
                         data.getStringExtra("title"),
                         data.getStringExtra("tip"),
                         data.getStringExtra("date"),
@@ -129,6 +131,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        DEFAULT_PIC = "android.resource://"+this.getPackageName()+"/"+R.drawable.default_img;
 
         //工具栏
         toolbar = findViewById(R.id.toolbar);
@@ -298,7 +302,7 @@ public class MainActivity extends AppCompatActivity {
         mainItems = new ArrayList<>();
         ArrayList<String> defaultlabel = new ArrayList<String>();
         defaultlabel.add("学习");
-        mainItems.add(new MainItem(R.drawable.default_img, "TITLE", "TIP", "2019.12.17.0.0.0",
+        mainItems.add(new MainItem(DEFAULT_PIC, "TITLE", "TIP", "2019.12.17.0.0.0",
                 defaultlabel, "每天", "0"));//default
         for(MainItem item : mainItems){
             setLeftTime(item);
@@ -315,7 +319,7 @@ public class MainActivity extends AppCompatActivity {
             MainItem m = mainItemDisplay.get(mainItemDisplay.size()-1);
             title.setText(m.getTitle());
             date.setText(m.getDate());
-            mainImg.setImageResource(m.getImgId());
+            mainImg.setImageURI(Uri.parse(m.getImgId()));
         }
     }
 

@@ -153,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
         mainlistView = findViewById(R.id.list_home);
 
         initMainItems();
+        initPage();
 
         mainItemAdapter = new MainItemAdapter(MainActivity.this,
                 R.layout.item_main, mainItems);
@@ -162,14 +163,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onStart() {
-        if (0 == mainItems.size()){
+        if (0 == mainItems.size()) {
             title.setText("nope");
             date.setText("nope");
-        }else{
-            initPage();
         }
         super.onStart();
-    }
+    }//: end of onStart
 
     @Override
     public void onDestroy() {

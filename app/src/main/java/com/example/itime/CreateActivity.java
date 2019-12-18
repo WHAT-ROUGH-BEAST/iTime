@@ -103,6 +103,10 @@ public class CreateActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent();
                 //TODO:后期改为自己选图片
+                if (null == imageUri){
+                    imageUri = Uri.parse("android.resource://"+CreateActivity.this.getPackageName()
+                            +"/"+R.drawable.default_img);
+                }
                 intent.putExtra("resId", imageUri.toString());
                 intent.putExtra("title", title.getText().toString());
                 intent.putExtra("tip", tip.getText().toString());
@@ -148,7 +152,7 @@ public class CreateActivity extends AppCompatActivity {
                     intent_gallery_crop.putExtra("aspectX", 1);
                     intent_gallery_crop.putExtra("aspectY", 1);
                     // outputX outputY 是裁剪图片宽高
-                    intent_gallery_crop.putExtra("outputX", 400);
+                    intent_gallery_crop.putExtra("outputX", 800);
                     intent_gallery_crop.putExtra("outputY", 400);
 
                     intent_gallery_crop.putExtra("return-data", false);

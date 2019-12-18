@@ -2,20 +2,24 @@ package com.example.itime;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
-import com.example.itime.data.KeepData;
 import com.example.itime.data.MainItemAdapter;
+import com.example.itime.data.MainItemSaver;
 import com.example.itime.data.model.MainItem;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,12 +32,18 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
-//TODO: 改颜色 上传图片 bar上的label标志
+//TODO: 改颜色 bar上的label标志 序列化
 public class MainActivity extends AppCompatActivity {
 
     private static final int CREAT_RET = 1;
@@ -41,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int ITEM_DETAIL = 100;
     private static final int ITEM_DETAIL_DEL = 101;
     private static final int ITEM_DETAIL_CHANGE = 102;
+    private static final int COLOR= 201;
+    private static final int COLORBCK = 200;
     private String DEFAULT_PIC;
 
     //部件
@@ -66,6 +78,10 @@ public class MainActivity extends AppCompatActivity {
     private Runnable update_thread;
     private Handler handlerStop;
 
+    //保存
+    private MainItemSaver saver;
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -86,6 +102,11 @@ public class MainActivity extends AppCompatActivity {
                     getMainItemChanges(data);
                 }
                 break;
+            case COLOR:
+                if (resultCode == COLORBCK){
+                    int color = data.getIntExtra("color", 0);
+                    this.getWindow().setColorMode(color);
+                }
             default:
                 Log.i("strange", "someone else pass back");
                 break;
@@ -176,13 +197,18 @@ public class MainActivity extends AppCompatActivity {
         handlerStop = new HandlerStop();
         update_thread.run();
 
+        //save
+        saver = new MainItemSaver(this);
+
     }//END OF ONCREATE
 
     @Override
     public void onStart() {
         //默认每次返回后进入home页面
+        //设置bar上文字
         mainItemDisplay.clear();mainItemDisplay.addAll(mainItems);
         initPage();
+        this.getWindow().setTitle("home");
 
         super.onStart();
     }//: end of onStart
@@ -193,6 +219,7 @@ public class MainActivity extends AppCompatActivity {
         Message message = new Message();
         message.what = 1;
         handlerStop.sendMessage(message);
+        saver.save(mainItems);
         super.onDestroy();
     }//: end of onDestroy
 
@@ -259,16 +286,21 @@ public class MainActivity extends AppCompatActivity {
             switch (i){
                 case 0:
                     //home
+                    //设置bar上文字
+                    MainActivity.this.getWindow().setTitle("home");
                     mainItemDisplay.clear();mainItemDisplay.addAll(mainItems);
                     mainItemAdapter.notifyDataSetChanged();
                     break;
                 case 1:
                     //color
                     Intent intent = new Intent(MainActivity.this, ColorActivity.class);
-                    startActivity(intent);
+                    startActivityForResult(intent, COLOR);
                     break;
                 default:
                     //label
+                    //设置bar上文字
+                    MainActivity.this.getWindow().setTitle(drawerItemAdapter.getItem(i));
+
                     for (MainItem m : mainItems){ //mainTiems size == 0
                         if (!m.getLabel().contains(drawerItemAdapter.getItem(i))){
                             mainItemDisplay.remove(m);
@@ -299,14 +331,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initMainItems(){
-        mainItems = new ArrayList<>();
-        ArrayList<String> defaultlabel = new ArrayList<String>();
-        defaultlabel.add("学习");
-        mainItems.add(new MainItem(DEFAULT_PIC, "TITLE", "TIP", "2019.12.17.0.0.0",
-                defaultlabel, "每天", "0"));//default
-        for(MainItem item : mainItems){
-            setLeftTime(item);
-            item.setTextOnImg(updateTextOnImg(item.getLeftTime()));
+        try{
+            assert mainItems!=null;
+            mainItems = saver.load();
+        }catch (Exception e){
+            mainItems = new ArrayList<>();
+            ArrayList<String> defaultlabel = new ArrayList<String>();
+            defaultlabel.add("学习");
+            mainItems.add(new MainItem(DEFAULT_PIC, "TITLE", "TIP", "2019.12.17.0.0.0",
+                    defaultlabel, "每天", "0"));//default
+            for(MainItem item : mainItems){
+                setLeftTime(item);
+                item.setTextOnImg(updateTextOnImg(item.getLeftTime()));
+            }
         }
     }
     private void initPage(){

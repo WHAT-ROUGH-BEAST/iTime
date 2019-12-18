@@ -16,11 +16,6 @@ android {
             targetCompatibility JavaVersion.VERSION_1_8
         }
 
-//        javaCompileOptions {
-//            annotationProcessorOptions {
-//                includeCompileClasspath true
-//            }
-//        }
     }
     buildTypes {
         release {

@@ -20,6 +20,7 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.ActionBar;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -69,6 +70,8 @@ public class MainActivity extends AppCompatActivity {
     private ListView mainlistView;
     private ArrayList<MainItem> mainItemDisplay;
     private MainItemAdapter mainItemAdapter;
+    private DrawerLayout drawer;
+    private View drawer_header;
 
     //数据
     private ArrayList<MainItem> mainItems;
@@ -105,7 +108,9 @@ public class MainActivity extends AppCompatActivity {
             case COLOR:
                 if (resultCode == COLORBCK){
                     int color = data.getIntExtra("color", 0);
+                    toolbar.setBackgroundColor(color);
                     this.getWindow().setColorMode(color);
+                    drawer_header.setBackgroundColor(color);
                 }
             default:
                 Log.i("strange", "someone else pass back");
@@ -164,7 +169,8 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new FabListener());
 
         //侧滑单
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer = findViewById(R.id.drawer_layout);
+        drawer_header = findViewById(R.id.drawer_header);
         drawerList = findViewById(R.id.drawer_list);
         drawerItem = new ArrayList<>();
         drawerItem.add("主页");
@@ -176,6 +182,8 @@ public class MainActivity extends AppCompatActivity {
         drawerList.setAdapter(drawerItemAdapter);
         drawerList.setOnItemClickListener(new ItemListener());
 
+        //save
+        saver = new MainItemSaver(this);
         //data
         initMainItems();
 
@@ -197,9 +205,6 @@ public class MainActivity extends AppCompatActivity {
         handlerStop = new HandlerStop();
         update_thread.run();
 
-        //save
-        saver = new MainItemSaver(this);
-
     }//END OF ONCREATE
 
     @Override
@@ -208,7 +213,6 @@ public class MainActivity extends AppCompatActivity {
         //设置bar上文字
         mainItemDisplay.clear();mainItemDisplay.addAll(mainItems);
         initPage();
-        this.getWindow().setTitle("home");
 
         super.onStart();
     }//: end of onStart
@@ -219,8 +223,9 @@ public class MainActivity extends AppCompatActivity {
         Message message = new Message();
         message.what = 1;
         handlerStop.sendMessage(message);
-        saver.save(mainItems);
         super.onDestroy();
+
+        saver.save(mainItems);
     }//: end of onDestroy
 
     //倒计时线程
@@ -287,7 +292,6 @@ public class MainActivity extends AppCompatActivity {
                 case 0:
                     //home
                     //设置bar上文字
-                    MainActivity.this.getWindow().setTitle("home");
                     mainItemDisplay.clear();mainItemDisplay.addAll(mainItems);
                     mainItemAdapter.notifyDataSetChanged();
                     break;
@@ -299,8 +303,6 @@ public class MainActivity extends AppCompatActivity {
                 default:
                     //label
                     //设置bar上文字
-                    MainActivity.this.getWindow().setTitle(drawerItemAdapter.getItem(i));
-
                     for (MainItem m : mainItems){ //mainTiems size == 0
                         if (!m.getLabel().contains(drawerItemAdapter.getItem(i))){
                             mainItemDisplay.remove(m);
@@ -333,8 +335,11 @@ public class MainActivity extends AppCompatActivity {
     private void initMainItems(){
         try{
             assert mainItems!=null;
+//            saver = null;
             mainItems = saver.load();
+            Log.d("saver", "load alright");
         }catch (Exception e){
+            Log.d("saver", "load null");
             mainItems = new ArrayList<>();
             ArrayList<String> defaultlabel = new ArrayList<String>();
             defaultlabel.add("学习");

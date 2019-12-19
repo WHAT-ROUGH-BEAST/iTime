@@ -101,17 +101,32 @@ public class ItemDetailActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         switch(requestCode){
             case ITEM_DETAIL_CHANGE:
-                Intent intent = new Intent();
-                intent.putExtra("resId", data.getStringExtra("resId"));
-                intent.putExtra("title", data.getStringExtra("title"));
-                intent.putExtra("tip", data.getStringExtra("tip"));
-                intent.putExtra("date", data.getStringExtra("date"));
-                intent.putExtra("label", data.getStringArrayListExtra("label"));
-                intent.putExtra("repeat", data.getStringExtra("repeat"));
-                intent.putExtra("textOnImg", thismainItem.getTextOnImg());
-                intent.putExtra("leftTime", thismainItem.getLeftTime());
-                intent.putExtra("index", index);
-                setResult(ITEM_DETAIL_CHANGE, intent);
+                try{
+                    assert null!=data;
+                    Intent intent = new Intent();
+                    intent.putExtra("resId", data.getStringExtra("resId"));
+                    intent.putExtra("title", data.getStringExtra("title"));
+                    intent.putExtra("tip", data.getStringExtra("tip"));
+                    intent.putExtra("date", data.getStringExtra("date"));
+                    intent.putExtra("label", data.getStringArrayListExtra("label"));
+                    intent.putExtra("repeat", data.getStringExtra("repeat"));
+                    intent.putExtra("textOnImg", thismainItem.getTextOnImg());
+                    intent.putExtra("leftTime", thismainItem.getLeftTime());
+                    intent.putExtra("index", index);
+                    setResult(ITEM_DETAIL_CHANGE, intent);
+                }catch (Exception e){
+                    Intent intent = new Intent();
+                    intent.putExtra("resId", thismainItem.getImgId());
+                    intent.putExtra("title", thismainItem.getTitle());
+                    intent.putExtra("tip", thismainItem.getTip());
+                    intent.putExtra("date", thismainItem.getDate());
+                    intent.putExtra("label", thismainItem.getLabel());
+                    intent.putExtra("repeat", thismainItem.getRepeat());
+                    intent.putExtra("textOnImg", thismainItem.getTextOnImg());
+                    intent.putExtra("leftTime", thismainItem.getLeftTime());
+                    intent.putExtra("index", index);
+                    setResult(ITEM_DETAIL_CHANGE, intent);
+                }
                 finish();
                 break;
         }

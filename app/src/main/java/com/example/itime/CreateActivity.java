@@ -102,7 +102,6 @@ public class CreateActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent();
-                //TODO:后期改为自己选图片
                 if (null == imageUri){
                     imageUri = Uri.parse("android.resource://"+CreateActivity.this.getPackageName()
                             +"/"+R.drawable.default_img);

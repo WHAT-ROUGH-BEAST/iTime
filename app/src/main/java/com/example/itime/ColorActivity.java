@@ -19,6 +19,7 @@ public class ColorActivity extends AppCompatActivity {
     private static final int COLORBCK = 200;
     private ImageButton btn_yes, btn_no;
     private int color_main;
+    private View view;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,18 +27,22 @@ public class ColorActivity extends AppCompatActivity {
 
         color_main = ContextCompat.getColor(this, R.color.colorPrimary);
 
+        view = findViewById(R.id.guesswhat);
         btn_yes = (ImageButton)findViewById(R.id.color_yes);
         btn_no = (ImageButton)findViewById(R.id.color_no);
 
         ColorPickerView picker = (ColorPickerView) findViewById(R.id.colorPickerView);
         picker.setIndicatorColor(Color.WHITE);
         picker.setOrientation(ColorPickerView.Orientation.HORIZONTAL);
-        picker.setColors(Color.RED, Color.YELLOW, Color.GREEN, Color.CYAN, Color.BLUE);
+        picker.setColors(Color.RED, Color.rgb(255, 80, 0), Color.YELLOW, Color.GREEN, Color.CYAN, Color.BLUE, Color.rgb(255, 0, 255));
         picker.setOnColorPickerChangeListener(new ColorPickerView.OnColorPickerChangeListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onColorChanged(ColorPickerView picker, int color) {
                 // TODO
                 color_main = color;
+                view.setBackgroundColor(color);
+                ColorActivity.this.getWindow().setColorMode(color);
             }
 
             @Override

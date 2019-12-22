@@ -108,7 +108,7 @@ public class ItemDetailActivity extends AppCompatActivity {
                     intent.putExtra("title", data.getStringExtra("title"));
                     intent.putExtra("tip", data.getStringExtra("tip"));
                     intent.putExtra("date", data.getStringExtra("date"));
-                    intent.putExtra("label", data.getStringArrayListExtra("label"));
+                    intent.putExtra("label", data.getStringExtra("label"));
                     intent.putExtra("repeat", data.getStringExtra("repeat"));
                     intent.putExtra("textOnImg", thismainItem.getTextOnImg());
                     intent.putExtra("leftTime", thismainItem.getLeftTime());
@@ -203,7 +203,7 @@ public class ItemDetailActivity extends AppCompatActivity {
                 intent.getStringExtra("title"),
                 intent.getStringExtra("tip"),
                 intent.getStringExtra("date"),
-                intent.getStringArrayListExtra("lable"),
+                intent.getStringArrayListExtra("lable"),//todo
                 intent.getStringExtra("repeat"),
                 "0");
         setLeftTime(thismainItem);

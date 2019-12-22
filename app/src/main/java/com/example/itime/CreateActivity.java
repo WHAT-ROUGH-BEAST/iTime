@@ -84,8 +84,8 @@ public class CreateActivity extends AppCompatActivity {
         textBackground = findViewById(R.id.textBackground);
 
         date = new String[6];
-        tags = new String();
-        repeat = new String();
+        tags = new String("");
+        repeat = new String("");
 
         color = getIntent().getIntExtra("color",
                 ContextCompat.getColor(this, R.color.colorPrimary));
@@ -115,25 +115,30 @@ public class CreateActivity extends AppCompatActivity {
         btnYes.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent();
-                if (null == imageUri){
-                    imageUri = Uri.parse("android.resource://"+CreateActivity.this.getPackageName()
-                            +"/"+R.drawable.default_img);
+                if (null != date[0]){
+                    Intent intent = new Intent();
+                    if (null == imageUri){
+                        imageUri = Uri.parse("android.resource://"+CreateActivity.this.getPackageName()
+                                +"/"+R.drawable.default_img);
+                    }
+                    intent.putExtra("resId", imageUri.toString());
+                    intent.putExtra("title", title.getText().toString());
+                    intent.putExtra("tip", tip.getText().toString());
+                    intent.putExtra("date",
+                            date[0] +"."+ date[1] +"."+ date[2] + "." +
+                                    date[3] + "." + date[4] +"."+ date[5]);
+                    intent.putExtra("label", tags);
+                    intent.putExtra("repeat", repeat);
+
+                    Log.d("repeat", "create_ret data != null " + repeat);
+                    Log.d("tags", "create_ret data != null " + tags);
+
+                    setResult(CREAT_GET_RET, intent);
+                    finish();
+                }else{
+                    Toast.makeText(getApplicationContext(), "请至少填入前三项",
+                            Toast.LENGTH_LONG).show();
                 }
-                intent.putExtra("resId", imageUri.toString());
-                intent.putExtra("title", title.getText().toString());
-                intent.putExtra("tip", tip.getText().toString());
-                intent.putExtra("date",
-                        date[0] +"."+ date[1] +"."+ date[2] + "." +
-                                date[3] + "." + date[4] +"."+ date[5]);
-                intent.putExtra("label", tags);
-                intent.putExtra("repeat", repeat);
-
-                Log.d("repeat", "create_ret data != null " + repeat);
-                Log.d("tags", "create_ret data != null " + tags);
-
-                setResult(CREAT_GET_RET, intent);
-                finish();
             }
         });
 

@@ -48,7 +48,7 @@
         android:layout_marginEnd="102dp"
         android:layout_marginRight="102dp"
         android:layout_marginBottom="60dp"
-        android:text="FUCK A COLOR"
+        android:text="PICK A COLOR"
         android:textColor="@color/white"
         android:textSize="@dimen/font_big" />
 

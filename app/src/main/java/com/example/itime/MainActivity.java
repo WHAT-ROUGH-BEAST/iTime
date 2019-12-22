@@ -2,7 +2,6 @@ package com.example.itime;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,7 +11,6 @@ import com.example.itime.data.MainItemSaver;
 import com.example.itime.data.model.MainItem;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -20,7 +18,7 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.ActionBar;
+import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,18 +31,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Locale;
-import java.util.TimeZone;
 
-//TODO: 改颜色 bar上的label标志 序列化
 public class MainActivity extends AppCompatActivity {
 
     private static final int CREAT_RET = 1;
@@ -84,6 +74,9 @@ public class MainActivity extends AppCompatActivity {
     //保存
     private MainItemSaver saver;
 
+    //主题色
+    private int color;
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -94,7 +87,6 @@ public class MainActivity extends AppCompatActivity {
                     getMainItemChanges(data);
                 }
                 break;
-                //END OF CASE
             case ITEM_DETAIL:
                 if(ITEM_DETAIL_DEL == resultCode){
                     int index = data.getIntExtra("index", 0);
@@ -107,7 +99,8 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case COLOR:
                 if (resultCode == COLORBCK){
-                    int color = data.getIntExtra("color", 0);
+                    color = data.getIntExtra("color",
+                            ContextCompat.getColor(this, R.color.colorPrimary));
                     toolbar.setBackgroundColor(color);
                     this.getWindow().setColorMode(color);
                     drawer_header.setBackgroundColor(color);
@@ -116,15 +109,23 @@ public class MainActivity extends AppCompatActivity {
                 Log.i("strange", "someone else pass back");
                 break;
         }
+
+        //每次页面转换 设置txtonimg
+        for(MainItem item : mainItems){
+            item.setTextOnImg(updateTextOnImg(item.getLeftTime()));
+        }
     }
     private void getMainItemChanges(Intent data){
+        String[] ms = data.getStringExtra("label").split(" ");
+        ArrayList<String> ma = new ArrayList<String>(Arrays.asList(ms));
+
         if (null != data.getStringExtra("textOnImg")){
             MainItem m = new MainItem(
                     data.getStringExtra("resId"),
                     data.getStringExtra("title"),
                     data.getStringExtra("tip"),
                     data.getStringExtra("date"),
-                    data.getStringArrayListExtra("label"),
+                    ma,
                     data.getStringExtra("repeat"),
                     data.getStringExtra("textOnImg"));
             m.setLeftTime(data.getLongExtra("leftTime", 0));
@@ -139,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
                         data.getStringExtra("title"),
                         data.getStringExtra("tip"),
                         data.getStringExtra("date"),
-                        data.getStringArrayListExtra("label"),
+                        ma,
                         data.getStringExtra("repeat"),
                         "0");
                 setLeftTime(m);
@@ -188,6 +189,7 @@ public class MainActivity extends AppCompatActivity {
         initMainItems();
 
         //页面
+        color = ContextCompat.getColor(this, R.color.colorPrimary);
         mainImg = findViewById(R.id.img_home);
         title = findViewById(R.id.title_home);
         date = findViewById(R.id.date_home);
@@ -212,10 +214,17 @@ public class MainActivity extends AppCompatActivity {
         //默认每次返回后进入home页面
         //设置bar上文字
         mainItemDisplay.clear();mainItemDisplay.addAll(mainItems);
+        mainItemAdapter.notifyDataSetChanged();
         initPage();
 
         super.onStart();
     }//: end of onStart
+
+    @Override
+    protected void onStop() {
+        saver.save(mainItems);
+        super.onStop();
+    }
 
     @Override
     public void onDestroy() {
@@ -223,9 +232,8 @@ public class MainActivity extends AppCompatActivity {
         Message message = new Message();
         message.what = 1;
         handlerStop.sendMessage(message);
-        super.onDestroy();
 
-        saver.save(mainItems);
+        super.onDestroy();
     }//: end of onDestroy
 
     //倒计时线程
@@ -235,7 +243,7 @@ public class MainActivity extends AppCompatActivity {
             //data
             try{
                 for(MainItem item : mainItems){
-                    item.setLeftTime(item.getLeftTime()-1);
+                    setLeftTime(item);
                     item.setTextOnImg(updateTextOnImg(item.getLeftTime()));
 
                     //时间到的提示
@@ -279,6 +287,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
             intentFab = new Intent(MainActivity.this, CreateActivity.class);
+            intentFab.putExtra("color", color);
             startActivityForResult(intentFab, CREAT_RET);
         }
     }
@@ -288,6 +297,11 @@ public class MainActivity extends AppCompatActivity {
     class ItemListener implements AdapterView.OnItemClickListener{
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            //每次页面转换 设置txtonimg
+            for(MainItem item : mainItems){
+                setLeftTime(item);
+                item.setTextOnImg(updateTextOnImg(item.getLeftTime()));
+            }
             switch (i){
                 case 0:
                     //home
@@ -303,7 +317,8 @@ public class MainActivity extends AppCompatActivity {
                 default:
                     //label
                     //设置bar上文字
-                    for (MainItem m : mainItems){ //mainTiems size == 0
+                    mainItemDisplay.clear();mainItemDisplay.addAll(mainItems);
+                    for (MainItem m : mainItems){
                         if (!m.getLabel().contains(drawerItemAdapter.getItem(i))){
                             mainItemDisplay.remove(m);
                         }
@@ -333,20 +348,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initMainItems(){
-        try{
-            assert mainItems!=null;
-//            saver = null;
+        if(null != saver.load()){
             mainItems = saver.load();
-            Log.d("saver", "load alright");
-        }catch (Exception e){
-            Log.d("saver", "load null");
+            for(MainItem item : mainItems){
+                setLeftTime(item);
+                item.setTextOnImg(updateTextOnImg(item.getLeftTime()));
+            }
+        }else{
             mainItems = new ArrayList<>();
             ArrayList<String> defaultlabel = new ArrayList<String>();
             defaultlabel.add("学习");
             mainItems.add(new MainItem(DEFAULT_PIC, "TITLE", "TIP", "2019.12.17.0.0.0",
                     defaultlabel, "每天", "0"));//default
             for(MainItem item : mainItems){
-                setLeftTime(item);
                 item.setTextOnImg(updateTextOnImg(item.getLeftTime()));
             }
         }

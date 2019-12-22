@@ -43,6 +43,8 @@ public class ColorActivity extends AppCompatActivity {
                 color_main = color;
                 view.setBackgroundColor(color);
                 ColorActivity.this.getWindow().setColorMode(color);
+                btn_yes.getBackground().setTint(color);
+                btn_no.getBackground().setTint(color);
             }
 
             @Override

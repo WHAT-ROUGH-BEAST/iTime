@@ -224,7 +224,7 @@ public class ItemDetailActivity extends AppCompatActivity {
     class RunUpdate implements Runnable {
         @Override
         public void run() {
-            thismainItem.setLeftTime(thismainItem.getLeftTime()-1);
+            setLeftTime(thismainItem);
             String formatLongToTimeStr = formatLongToTimeStr(thismainItem.getLeftTime());
             downcount.setText(formatLongToTimeStr);
             handler.postDelayed(this, 1000);

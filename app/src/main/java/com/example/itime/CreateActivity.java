@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -59,12 +60,16 @@ public class CreateActivity extends AppCompatActivity {
     private String[] date;
     private String tags;
     private String repeat;
+    private View backgroundView;
+    private View textBackground;
 //    private int resourceId;
+    private int color;
 
     private File imageFile = null;// 声明File对象
     private Uri imageUri = null;// 裁剪后的图片uri
     private String path = "";
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @SuppressLint("ResourceType")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -75,10 +80,19 @@ public class CreateActivity extends AppCompatActivity {
         btnYes = (ImageButton)findViewById(R.id.create_yes);
         title = (EditText)findViewById(R.id.create_title_edit);
         tip = (EditText)findViewById(R.id.create_tip_edit);
+        backgroundView = findViewById(R.id.create_background);
+        textBackground = findViewById(R.id.textBackground);
 
         date = new String[6];
         tags = new String();
         repeat = new String();
+
+        color = getIntent().getIntExtra("color",
+                ContextCompat.getColor(this, R.color.colorPrimary));
+        backgroundView.setBackgroundColor(color);
+        textBackground.setBackgroundColor(color);
+        btnNo.getBackground().setTint(color);
+        btnYes.getBackground().setTint(color);
 
         //ListView init
         initRecord();
@@ -229,42 +243,6 @@ public class CreateActivity extends AppCompatActivity {
             }
         }
     }
-
-    //timedialog 初版
-//    private void timeDialog(){
-//        View view = getLayoutInflater().inflate(R.layout.get_time_dialog, null);
-//        final EditText edityear = (EditText)view.findViewById(R.id.edit_year),
-//                editmonth = (EditText)view.findViewById(R.id.edit_month),
-//                editday = (EditText)view.findViewById(R.id.edit_day);
-//
-//        AlertDialog.Builder builder = new AlertDialog.Builder(CreateActivity.this);
-//        builder.setTitle("日历");
-//        builder.setView(view);
-//        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                dialog.dismiss();
-//            }
-//        });
-//        builder.setPositiveButton("确定", new DialogInterface.OnClickListener(){
-//            @Override
-//            public void onClick(DialogInterface dialog, int i) {
-//                date[0] = edityear.getText().toString();//'android.text.Editable android.widget.EditText.getText()' on a null object reference//TODO
-//                date[1] = editmonth.getText().toString();
-//                date[2] = editday.getText().toString();
-//                //show
-//                records.set(0,new Record(R.drawable.time, "日期",
-//                        date[0]+"."+date[1]+"."+date[2]));
-//                recordAdapter.notifyDataSetChanged();
-//
-//                dialog.dismiss();
-//            }
-//        });
-//
-//        AlertDialog dialog = builder.create();
-//        dialog.show();
-//    }
-//////////////////////////////////////////////////////////
 
     private void timeDialogDate() {
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GTM+08:00"), Locale.CHINA);

@@ -308,6 +308,7 @@ public class MainActivity extends AppCompatActivity {
                     //设置bar上文字
                     mainItemDisplay.clear();mainItemDisplay.addAll(mainItems);
                     mainItemAdapter.notifyDataSetChanged();
+                    initPage();
                     break;
                 case 1:
                     //color

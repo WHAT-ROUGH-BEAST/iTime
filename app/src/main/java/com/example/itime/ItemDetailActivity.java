@@ -27,9 +27,12 @@ import static com.example.itime.MainActivity.updateTextOnImg;
 
 public class ItemDetailActivity extends AppCompatActivity {
 
+    private static final int CREAT_GET_RET = 1;
+    private static final int CREAT_GET_CAL = 2;
     private static final boolean AUTO_HIDE = true;
     private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
     private static final int UI_ANIMATION_DELAY = 300;
+
     private final Handler mHideHandler = new Handler();
     private View mContentView;
     private final Runnable mHidePart2Runnable = new Runnable() {
@@ -101,8 +104,7 @@ public class ItemDetailActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         switch(requestCode){
             case ITEM_DETAIL_CHANGE:
-                try{
-                    assert null!=data;
+                if (CREAT_GET_RET == resultCode){
                     Intent intent = new Intent();
                     intent.putExtra("resId", data.getStringExtra("resId"));
                     intent.putExtra("title", data.getStringExtra("title"));
@@ -114,7 +116,7 @@ public class ItemDetailActivity extends AppCompatActivity {
                     intent.putExtra("leftTime", thismainItem.getLeftTime());
                     intent.putExtra("index", index);
                     setResult(ITEM_DETAIL_CHANGE, intent);
-                }catch (Exception e){
+                } else if (CREAT_GET_CAL == resultCode){
                     Intent intent = new Intent();
                     intent.putExtra("resId", thismainItem.getImgId());
                     intent.putExtra("title", thismainItem.getTitle());
@@ -127,6 +129,7 @@ public class ItemDetailActivity extends AppCompatActivity {
                     intent.putExtra("index", index);
                     setResult(ITEM_DETAIL_CHANGE, intent);
                 }
+
                 finish();
                 break;
         }

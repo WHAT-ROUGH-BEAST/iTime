@@ -89,7 +89,8 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case ITEM_DETAIL:
                 if(ITEM_DETAIL_DEL == resultCode){
-                    int index = data.getIntExtra("index", 0);
+                    assert data != null;
+                    int index = data.getIntExtra("del_index", 0);
                     mainItems.remove(index);
                     mainItemAdapter.notifyDataSetChanged();
                 }
@@ -336,7 +337,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             Intent intent = new Intent(MainActivity.this, ItemDetailActivity.class);
-            intent.putExtra("index", i);
+            intent.putExtra("index", mainItems.indexOf(mainItemDisplay.get(i)));//TODO
             intent.putExtra("resId", mainItemDisplay.get(i).getImgId());
             intent.putExtra("title", mainItemDisplay.get(i).getTitle());
             intent.putExtra("tip", mainItemDisplay.get(i).getTip());
@@ -389,7 +390,7 @@ public class MainActivity extends AppCompatActivity {
             calendar_ddl.set(Integer.parseInt(ddltime_str[0]),
                     Integer.parseInt(ddltime_str[1]) - 1,
                     Integer.parseInt(ddltime_str[2]),
-                    Integer.parseInt(ddltime_str[3]) - 8,
+                    Integer.parseInt(ddltime_str[3]), // -8
                     Integer.parseInt(ddltime_str[4]),
                     Integer.parseInt(ddltime_str[5]));
             mainItem.setLeftTime((calendar_ddl.getTimeInMillis() - calendar_now.getTimeInMillis())/1000);

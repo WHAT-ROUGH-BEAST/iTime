@@ -46,6 +46,7 @@ import butterknife.ButterKnife;
 public class CreateActivity extends AppCompatActivity {
 
     private static final int CREAT_GET_RET = 1;
+    private static final int CREAT_GET_CAL = 2;
     private static final int REQUEST_CODE_GALLERY = 0x10;// 图库选取图片标识请求码
     private static final int CROP_PHOTO = 0x12;// 裁剪图片标识请求码
     private static final int STORAGE_PERMISSION = 0x20;// 动态申请存储权限标识
@@ -108,6 +109,8 @@ public class CreateActivity extends AppCompatActivity {
         btnNo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent intent = new Intent();
+                setResult(CREAT_GET_CAL, intent);
                 finish();
             }
         });
